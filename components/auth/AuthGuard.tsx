@@ -1,15 +1,15 @@
 "use client";
 
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "@/firebase/config";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { auth } from "@/firebase/config";
 
-type Props = {
+export default function AuthGuard({
+  children,
+}: {
   children: React.ReactNode;
-};
-
-export default function AuthGuard({ children }: Props) {
+}) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +26,7 @@ export default function AuthGuard({ children }: Props) {
   }, [router]);
 
   if (loading) {
-    return <p>Loading...</p>;
+    return <div>Loading...</div>;
   }
 
   return <>{children}</>;

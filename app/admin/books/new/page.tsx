@@ -9,12 +9,13 @@ import {
 } from "firebase/firestore";
 
 import { db } from "@/firebase/config";
-import ImageUploader from "@/components/ImageUploader";
+import ImageUploader from "@/components/common/ImageUploader";
 
 export default function NewBookPage() {
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   // ImageUploaderから受け取る画像ファイル
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -30,6 +31,21 @@ export default function NewBookPage() {
   });
 
   const saveBook = async () => {
+    setErrorMessage("");
+
+    if (
+      !book.title.trim() ||
+      !book.author.trim() ||
+      !book.isbn.trim() ||
+      !book.publisher.trim() ||
+      !book.publishDate ||
+      !book.category.trim() ||
+      book.stock <= 0 ||
+      !imageFile
+    ) {
+      setErrorMessage("すべての項目を入力してください。表紙画像も選択してください。");
+      return;
+    }
     try {
       setLoading(true);
 
@@ -66,7 +82,7 @@ export default function NewBookPage() {
 
       alert("本を登録しました");
 
-      router.push("/books");
+      router.push("/admin/books");
     } catch (error) {
       console.error(error);
       alert("登録に失敗しました");
@@ -77,14 +93,20 @@ export default function NewBookPage() {
 
   return (
     <main className="mx-auto max-w-2xl p-8">
-      <h1 className="mb-8 text-3xl font-bold">
+      <h1 className="mb-8 text-3xl font-bold text-black">
         📚 本を登録
       </h1>
+
+      {errorMessage && (
+        <div className="rounded-lg border border-red-300 bg-red-50 p-3 text-red-600">
+          {errorMessage}
+        </div>
+      )}
 
       <div className="space-y-4">
 
         <input
-          className="w-full rounded border p-3"
+          className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
           placeholder="タイトル"
           value={book.title}
           onChange={(e) =>
@@ -96,7 +118,7 @@ export default function NewBookPage() {
         />
 
         <input
-          className="w-full rounded border p-3"
+          className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
           placeholder="著者"
           value={book.author}
           onChange={(e) =>
@@ -108,7 +130,7 @@ export default function NewBookPage() {
         />
 
         <input
-          className="w-full rounded border p-3"
+          className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
           placeholder="ISBN"
           value={book.isbn}
           onChange={(e) =>
@@ -120,7 +142,7 @@ export default function NewBookPage() {
         />
 
         <input
-          className="w-full rounded border p-3"
+          className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
           placeholder="出版社"
           value={book.publisher}
           onChange={(e) =>
@@ -133,7 +155,7 @@ export default function NewBookPage() {
 
         <input
           type="date"
-          className="w-full rounded border p-3"
+          className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
           value={book.publishDate}
           onChange={(e) =>
             setBook({
@@ -144,7 +166,7 @@ export default function NewBookPage() {
         />
 
         <input
-          className="w-full rounded border p-3"
+          className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
           placeholder="カテゴリ"
           value={book.category}
           onChange={(e) =>
@@ -154,11 +176,14 @@ export default function NewBookPage() {
             })
           }
         />
-
+        
+        <label className="mb-2 block font-semibold text-black">
+            在庫数
+          </label>
         <input
           type="number"
           min={0}
-          className="w-full rounded border p-3"
+          className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
           value={book.stock}
           onChange={(e) =>
             setBook({
@@ -169,7 +194,7 @@ export default function NewBookPage() {
         />
 
         <div>
-          <label className="mb-2 block font-semibold">
+          <label className="mb-2 block font-semibold text-black">
             表紙画像
           </label>
 

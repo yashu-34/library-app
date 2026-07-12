@@ -28,10 +28,10 @@ export default function BooksPage() {
   return (
     <main className="p-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold">📚 本一覧</h1>
+        <h1 className="text-3xl font-bold text-black">📚 本一覧</h1>
 
         <Link
-          href="/books/new"
+          href="/admin/books/new"
           className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
         >
           新規登録
@@ -54,6 +54,8 @@ export default function BooksPage() {
               />
             </div>
 
+          <div className="text-black">
+
             <h2 className="text-xl font-bold">{book.title}</h2>
 
             <p>著者：{book.author}</p>
@@ -68,16 +70,18 @@ export default function BooksPage() {
 
             <p>在庫：{book.stock}冊</p>
 
+          </div>
+
             <div className="mt-4 flex gap-3">
               <Link
-                href={`/books/${book.id}`}
+                href={`/admin/books/${book.id}`}
                 className="text-blue-600 hover:underline"
               >
                 詳細
               </Link>
 
               <Link
-                href={`/books/${book.id}/edit`}
+                href={`/admin/books/${book.id}/edit`}
                 className="text-green-600 hover:underline"
               >
                 編集
