@@ -233,7 +233,7 @@ if(!bookSnap.exists()){
 
 
 alert(
-"本がありません"
+"商品がありません"
 );
 
 

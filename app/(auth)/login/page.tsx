@@ -27,16 +27,15 @@ export default function LoginPage() {
     try {
       setLoading(true);
 
-      // Firebase Authentication
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const userCredential =
+        await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
 
       const uid = userCredential.user.uid;
 
-      // Firestoreからユーザー情報取得
       const userDoc = await getDoc(doc(db, "users", uid));
 
       if (!userDoc.exists()) {
@@ -51,8 +50,11 @@ export default function LoginPage() {
       } else {
         router.push("/dashboard");
       }
+
     } catch (error: any) {
+
       switch (error.code) {
+
         case "auth/user-not-found":
           setErrorMessage("ユーザーが存在しません。");
           break;
@@ -71,60 +73,101 @@ export default function LoginPage() {
 
         default:
           setErrorMessage("ログインに失敗しました。");
-          console.error(error);
       }
+
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-lg">
-        <h1 className="mb-8 text-center text-3xl font-bold text-black">
-          📚 図書館貸出システム
-        </h1>
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-100 via-sky-100 to-indigo-100 p-4">
 
-        <input
-          className="mb-4 w-full rounded border p-3"
-          type="email"
-          placeholder="メールアドレス"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+      <div className="w-full max-w-md rounded-3xl bg-white p-8 shadow-2xl">
 
-        <input
-          className="mb-4 w-full rounded border p-3"
-          type="password"
-          placeholder="パスワード"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+        <div className="text-center">
 
-        {errorMessage && (
-          <p className="mb-4 rounded bg-red-100 p-2 text-sm text-red-600">
-            {errorMessage}
+          <div className="text-6xl">
+            📚
+          </div>
+
+          <h1 className="mt-3 text-3xl font-bold text-blue-700">
+            図書館貸出システム
+          </h1>
+
+          <p className="mt-2 text-gray-500">
+            ログインして図書を借りましょう
           </p>
-        )}
 
-        <button
-          onClick={login}
-          disabled={loading}
-          className="w-full rounded bg-blue-600 p-3 text-white transition hover:bg-blue-700 disabled:bg-gray-400"
-        >
-          {loading ? "ログイン中..." : "ログイン"}
-        </button>
+        </div>
 
-        <div className="mt-4">
-        <Link
-          href="/register"
-          className="block w-full rounded border border-blue-600 p-3 text-center font-medium text-blue-600 transition hover:bg-blue-50"
-        >
-          新規登録はこちら
-        </Link>
+        <div className="mt-8 space-y-5">
+
+          <div>
+
+            <label className="mb-2 block font-semibold text-gray-700">
+              メールアドレス
+            </label>
+
+            <input
+              type="email"
+              placeholder="sample@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mb-4 w-full rounded-lg border border-gray-300 bg-white p-3 text-black placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            />
+
+          </div>
+
+          <div>
+
+            <label className="mb-2 block font-semibold text-gray-700">
+              パスワード
+            </label>
+
+            <input
+              type="password"
+              placeholder="********"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mb-4 w-full rounded-lg border border-gray-300 bg-white p-3 text-black placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+            />
+
+          </div>
+
+          {errorMessage && (
+
+            <div className="rounded-lg bg-red-100 p-3 text-center text-red-600">
+
+              ⚠️ {errorMessage}
+
+            </div>
+
+          )}
+
+          <button
+            onClick={login}
+            disabled={loading}
+            className="w-full rounded-xl bg-blue-600 py-3 text-lg font-bold text-white transition hover:bg-blue-700 disabled:bg-gray-400"
+          >
+            {loading ? "ログイン中..." : "🔑 ログイン"}
+          </button>
+
+          <div className="text-center text-gray-500">
+            または
+          </div>
+
+          <Link
+            href="/register"
+            className="block w-full rounded-xl border-2 border-blue-600 py-3 text-center font-bold text-blue-600 transition hover:bg-blue-50"
+          >
+            👤 新規利用者登録
+          </Link>
+
+        </div>
+
       </div>
-              
-      </div>
+
     </main>
   );
 }

@@ -221,7 +221,7 @@ currentBorrowCount + cart.length > 5
 
 alert(
 
-`現在${currentBorrowCount}冊借りています。最大5冊までです。`
+`現在${currentBorrowCount}個借りています。最大5冊までです。`
 
 );
 
@@ -510,7 +510,7 @@ shadow
 text-gray-500
 ">
 
-カートに本がありません
+カートに商品がありません
 
 </p>
 
@@ -679,7 +679,7 @@ font-bold
 text-gray-900
 ">
 
-合計 {cart.length}冊
+合計 {cart.length}個
 
 </p>
 
@@ -750,7 +750,7 @@ hover:bg-gray-700
 >
 
 
-← 本一覧へ戻る
+← 商品一覧へ戻る
 
 
 </Link>

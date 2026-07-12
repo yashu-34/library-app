@@ -193,7 +193,7 @@ if(!bookSnap.exists()){
 
 
 alert(
-"本データが存在しません"
+"商品データが存在しません"
 );
 
 
@@ -485,7 +485,7 @@ text-white
 <tr>
 
 <th className="p-3 border">
-本
+商品名
 </th>
 
 <th className="p-3 border">

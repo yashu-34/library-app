@@ -8,11 +8,12 @@ import { doc, setDoc } from "firebase/firestore";
 import { db } from "@/firebase/config";
 
 export default function RegisterPage() {
+  const router = useRouter();
+
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [address, setAddress] = useState("");
   const [password, setPassword] = useState("");
-  const router = useRouter();
 
   const register = async () => {
     try {
@@ -33,9 +34,7 @@ export default function RegisterPage() {
 
       alert("登録しました！");
 
-      setName("");
-      setEmail("");
-      setPassword("");
+      router.push("/dashboard");
 
     } catch (error: any) {
       console.error(error);
@@ -55,61 +54,102 @@ export default function RegisterPage() {
 
         default:
           alert("登録に失敗しました。");
-          break;
       }
     }
   };
 
   return (
-    <main className="mx-auto mt-20 max-w-md rounded-lg border p-8 shadow">
-      <h1 className="mb-6 text-center text-2xl font-bold">
-        ユーザー登録
-      </h1>
+    <main className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center p-4">
 
-      <input
-        className="mb-4 w-full rounded border p-2"
-        placeholder="名前"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+      <div className="w-full max-w-md rounded-2xl bg-white shadow-2xl p-8">
 
-      <input
-        className="mb-4 w-full rounded border p-2"
-        placeholder="メールアドレス"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+        <div className="text-center">
 
-      <input
-        className="mb-4 w-full rounded border p-2"
-        placeholder="住所"
-        value={address}
-        onChange={(e) => setAddress(e.target.value)}
-      />
+          <div className="text-6xl">📚</div>
 
-      <input
-        className="mb-6 w-full rounded border p-2"
-        type="password"
-        placeholder="パスワード"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+          <h1 className="mt-3 text-3xl font-bold text-blue-700">
+            図書館利用者登録
+          </h1>
 
-      <button
-        onClick={register}
-        className="w-full rounded bg-blue-600 py-2 text-white hover:bg-blue-700"
-      >
-        登録
-      </button>
+          <p className="mt-2 text-gray-500">
+            図書館貸出システムへようこそ
+          </p>
 
-      <div className="mt-4">
-        <button
-          onClick={() => router.push("/login")}
-          className="w-full rounded border border-gray-300 py-2 font-medium text-gray-700 transition hover:bg-gray-100"
-        >
-          ← ログイン画面へ戻る
-        </button>
+        </div>
+
+        <div className="mt-8 space-y-5">
+
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
+              名前
+            </label>
+
+            <input
+              className="mb-4 w-full rounded-lg border border-gray-300 bg-white p-3 text-black placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              placeholder="山田 太郎"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
+              メールアドレス
+            </label>
+
+            <input
+              className="mb-4 w-full rounded-lg border border-gray-300 bg-white p-3 text-black placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              placeholder="sample@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
+              住所
+            </label>
+
+            <input
+              className="mb-4 w-full rounded-lg border border-gray-300 bg-white p-3 text-black placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              placeholder="愛知県名古屋市..."
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-semibold text-gray-700">
+              パスワード
+            </label>
+
+            <input
+              type="password"
+              className="mb-4 w-full rounded-lg border border-gray-300 bg-white p-3 text-black placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
+              placeholder="6文字以上"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <button
+            onClick={register}
+            className="w-full rounded-lg bg-blue-600 py-3 text-lg font-bold text-white transition hover:bg-blue-700"
+          >
+            📚 利用者登録
+          </button>
+
+          <button
+            onClick={() => router.push("/login")}
+            className="w-full rounded-lg border border-gray-300 py-3 font-semibold text-gray-700 transition hover:bg-gray-100"
+          >
+            ← ログイン画面へ戻る
+          </button>
+
+        </div>
+
       </div>
+
     </main>
   );
 }

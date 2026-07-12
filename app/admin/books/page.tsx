@@ -28,7 +28,7 @@ export default function BooksPage() {
   return (
     <main className="p-8">
       <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-black">📚 本一覧</h1>
+        <h1 className="text-3xl font-bold text-black">📚 商品一覧</h1>
 
         <Link
           href="/admin/books/new"
@@ -58,17 +58,15 @@ export default function BooksPage() {
 
             <h2 className="text-xl font-bold">{book.title}</h2>
 
-            <p>著者：{book.author}</p>
+            <p>販売名：{book.author}</p>
 
-            <p>ISBN：{book.isbn}</p>
+            <p>販売会社：{book.publisher}</p>
 
-            <p>出版社：{book.publisher}</p>
-
-            <p>出版日：{book.publishDate}</p>
+            <p>発売日：{book.publishDate}</p>
 
             <p>カテゴリ：{book.category}</p>
 
-            <p>在庫：{book.stock}冊</p>
+            <p>在庫：{book.stock}個</p>
 
           </div>
 

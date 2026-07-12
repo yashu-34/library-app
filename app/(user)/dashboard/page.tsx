@@ -334,143 +334,79 @@ max-w-6xl
 
 {/* ヘッダー */}
 
-<div className="
-mb-6
-flex
-flex-col
-gap-4
-sm:flex-row
-sm:items-center
-sm:justify-between
-">
+<div className="mb-8 overflow-hidden rounded-3xl bg-gradient-to-r from-amber-800 via-yellow-700 to-amber-900 text-white shadow-2xl">
 
+  <div className="flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between">
 
-<h1 className="
-text-2xl
-font-bold
-text-gray-900
-sm:text-3xl
-">
+    {/* 左側 */}
+    <div>
 
-📚 利用者ダッシュボード
+      <div className="flex items-center gap-3">
 
-</h1>
+        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 text-4xl backdrop-blur">
+          📚
+        </div>
 
+        <div>
+          <h1 className="text-3xl font-bold">
+            Library Management
+          </h1>
 
+          <p className="text-yellow-100">
+            図書館貸出システム
+          </p>
+        </div>
 
+      </div>
 
+      <div className="mt-6">
 
-<button
+        <p className="text-2xl font-semibold">
+          ようこそ、{user?.name}さん 👋
+        </p>
 
-onClick={handleLogout}
+        <p className="mt-2 max-w-xl text-yellow-100">
+          商品を検索したり、
+          現在の貸出状況や貸出履歴を
+          確認できます。
+        </p>
 
-className="
-rounded-lg
-bg-red-600
-px-5
-py-3
-font-bold
-text-white
-hover:bg-red-700
-"
+      </div>
 
->
+    </div>
 
-🚪 ログアウト
+    {/* 右側 */}
+    <div className="space-y-4 text-center">
 
-</button>
+      <div className="rounded-2xl bg-white/10 p-5 backdrop-blur">
 
+        <p className="text-sm text-yellow-100">
+          今日の日付
+        </p>
 
-</div>
+        <p className="mt-1 text-xl font-bold">
+          {new Date().toLocaleDateString("ja-JP", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            weekday: "long",
+          })}
+        </p>
 
+      </div>
 
+      <button
+        onClick={handleLogout}
+        className="w-full rounded-xl bg-red-600 px-6 py-3 font-bold transition hover:bg-red-700"
+      >
+        🚪 ログアウト
+      </button>
 
+    </div>
 
-
-
-
-
-
-
-{/* ユーザー情報 */}
-
-<div className="
-mb-6
-rounded-xl
-bg-white
-p-5
-shadow
-sm:p-6
-">
-
-
-<h2 className="
-mb-4
-text-xl
-font-bold
-text-blue-600
-">
-
-👤 会員情報
-
-</h2>
-
-
-
-
-
-<div className="
-space-y-2
-text-gray-800
-">
-
-
-<p>
-
-<strong>
-名前：
-</strong>
-
-{user?.name}
-
-</p>
-
-
-
-<p>
-
-<strong>
-メール：
-</strong>
-
-{user?.email}
-
-</p>
-
-
-
-
-<p>
-
-<strong>
-住所：
-</strong>
-
-{user?.address}
-
-</p>
-
-
+  </div>
 
 </div>
-
-
-
-</div>
-
-
-
-
 
 
 
@@ -524,7 +460,7 @@ text-xl
 mt-2
 ">
 
-現在借りている本
+現在借りている商品
 
 </p>
 
@@ -588,7 +524,7 @@ font-bold
 text-gray-900
 ">
 
-本を探す
+商品を探す
 
 </h2>
 
@@ -599,7 +535,7 @@ mt-2
 text-gray-600
 ">
 
-本を検索して借りる
+商品を検索して借りる
 
 </p>
 

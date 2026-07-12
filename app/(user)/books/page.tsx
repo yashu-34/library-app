@@ -20,6 +20,8 @@ import {
   useCart
 } from "@/components/user/CartProvider";
 
+import { useRouter } from "next/navigation";
+
 
 
 interface Book {
@@ -100,8 +102,23 @@ const {
 useCart();
 
 
+const [selectedCategory, setSelectedCategory] = useState("");
 
 
+const categories = [...new Set(books.map(book => book.category))];
+
+
+const categoryIcons: Record<string, string> = {
+  "極くすり湯": "📚",
+  "伝統薬湯": "📰",
+  "素材良湯": "💻",
+  "ビューティーバス": "👨‍💻",
+  "アロマティックバス": "🏯",
+  "シーズンバス": "⚽",
+  "企画商品　７種類": "🍳",
+};
+
+const router = useRouter();
 
 
 
@@ -315,7 +332,7 @@ borrowCount + cartCount >= 5
 
 setMessage(
 
-"貸出できる本は最大5冊までです"
+"借りられる個数は最大5個までです"
 
 );
 
@@ -401,26 +418,17 @@ setTimeout(()=>setMessage(""),3000);
 
 
 
-const filteredBooks =
+const filteredBooks = books.filter((book) => {
+  const matchKeyword =
+    book.title.includes(keyword) ||
+    book.author.includes(keyword);
 
+  const matchCategory =
+    selectedCategory === "" ||
+    book.category === selectedCategory;
 
-books.filter(
-
-(book)=>
-
-book.title.includes(keyword)
-
-||
-
-book.author.includes(keyword)
-
-);
-
-
-
-
-
-
+  return matchKeyword && matchCategory;
+});
 
 
 
@@ -474,84 +482,35 @@ max-w-7xl
 ">
 
 
+<header className="mb-8 flex items-center justify-between">
 
+  <div className="flex items-center gap-4">
 
+    <button
+      onClick={() => router.push("/dashboard")}
+      className="rounded-xl bg-white px-4 py-3 shadow transition hover:bg-gray-100"
+    >
+      ← ホーム
+    </button>
 
+    <h1 className="text-3xl font-bold text-gray-900">
+      📚 商品検索
+    </h1>
 
+  </div>
 
-<header className="
-mb-6
-flex
-flex-col
-gap-4
-sm:flex-row
-sm:items-center
-sm:justify-between
-">
+  <Link
+    href="/cart"
+    className="flex items-center rounded-xl bg-green-600 px-5 py-3 font-bold text-white shadow hover:bg-green-700"
+  >
+    🛒 カート
 
-
-<h1 className="
-text-2xl
-font-bold
-text-gray-900
-sm:text-3xl
-">
-
-📚 本一覧
-
-</h1>
-
-
-
-
-
-
-<Link
-
-href="/cart"
-
-className="
-flex
-items-center
-justify-center
-rounded-lg
-bg-green-600
-px-5
-py-3
-font-bold
-text-white
-"
-
->
-
-🛒 カート
-
-<span className="
-ml-2
-rounded-full
-bg-white
-px-3
-py-1
-text-green-700
-">
-
-{cart.length}
-
-</span>
-
-
-</Link>
-
-
+    <span className="ml-3 rounded-full bg-white px-3 py-1 text-green-700">
+      {cart.length}
+    </span>
+  </Link>
 
 </header>
-
-
-
-
-
-
-
 
 
 {
@@ -611,10 +570,64 @@ text-gray-900
 />
 
 
+<div className="mb-10">
+  <h2 className="mb-5 flex items-center gap-2 text-2xl font-bold text-gray-800">
+    📚 カテゴリから探す
+  </h2>
 
+  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+    <button
+      onClick={() => setSelectedCategory("")}
+      className={`
+      rounded-2xl border p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg
+      ${
+        selectedCategory === ""
+          ? "border-blue-600 bg-blue-600 text-black"
+          : "bg-white"
+      }
+      `}
+    >
+      <div className="mb-3 text-4xl">📚</div>
+      <p className="font-bold text-black">すべて</p>
+    </button>
 
+    {categories.map((category) => (
+    <button
+        key={category}
+        onClick={() => setSelectedCategory(category)}
+        className={`
+        rounded-2xl
+        border
+        p-5
+        shadow-sm
+        transition-all
+        duration-300
+        hover:-translate-y-1
+        hover:shadow-lg
+        ${
+            selectedCategory === category
+            ? "border-blue-600 bg-blue-600 text-white"
+            : "border-gray-200 bg-white text-gray-800 hover:bg-blue-50"
+        }
+        `}
+    >
+        <div className="mb-3 text-4xl">
+        {categoryIcons[category]}
+        </div>
 
-
+        <p
+        className={`font-bold ${
+            selectedCategory === category
+            ? "text-white"
+            : "text-gray-800"
+        }`}
+        >
+        {category}
+        </p>
+    </button>
+    ))}
+  </div>
+</div>
 
 
 
@@ -752,7 +765,7 @@ book.stock > 0
 
 {book.stock}
 
-冊
+個
 
 </p>
 
