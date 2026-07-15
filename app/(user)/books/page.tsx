@@ -324,6 +324,7 @@ const handleAddCart = async (book: Book) => {
     setMessage(
       "同じ商品は5個までです"
     );
+    
 
 
     setTimeout(
@@ -389,6 +390,10 @@ const handleAddCart = async (book: Book) => {
     `${book.title}をカートへ追加しました`
   );
 
+  alert(
+  `${book.title}をカートへ追加しました`
+);
+
 
   setTimeout(
     ()=>setMessage(""),
@@ -399,6 +404,15 @@ const handleAddCart = async (book: Book) => {
 };
 
 
+// カート内の商品数を取得
+const getCartCount = (bookId:string)=>{
+
+  return cart.filter(
+    (item)=>
+      item.bookId === bookId
+  ).length;
+
+};
 
 
 const filteredBooks = books.filter((book) => {
@@ -757,17 +771,47 @@ filteredBooks.map((book)=>(
         在庫状況
       </span>
 
-      <span
-        className={`rounded-full px-3 py-1 text-sm font-bold ${
-          book.stock > 0
-            ? "bg-green-100 text-green-700"
-            : "bg-red-100 text-red-600"
-        }`}
-      >
-        {book.stock > 0
-          ? `残り ${book.stock}個`
-          : "在庫なし"}
-      </span>
+
+      {
+        (() => {
+
+          // カートに入っている数
+          const cartCount = cart.filter(
+            (item) =>
+              item.bookId === book.id
+          ).length;
+
+
+          // 実際に表示する残り在庫
+          const remainingStock =
+            book.stock - cartCount;
+
+
+
+          return (
+
+            <span
+              className={`rounded-full px-3 py-1 text-sm font-bold ${
+                remainingStock > 0
+                  ? "bg-green-100 text-green-700"
+                  : "bg-red-100 text-red-600"
+              }`}
+            >
+
+              {
+                remainingStock > 0
+                  ? `残り ${remainingStock}個`
+                  : "在庫なし"
+              }
+
+            </span>
+
+          );
+
+
+        })()
+      }
+
 
     </div>
 
@@ -782,13 +826,35 @@ filteredBooks.map((book)=>(
       </Link>
 
       <button
-        disabled={book.stock <= 0}
+        disabled={
+          book.stock -
+          cart.filter(
+            (item) => item.bookId === book.id
+          ).length
+          <= 0
+        }
         onClick={() => handleAddCart(book)}
-        className="w-full rounded-xl bg-green-600 py-3 font-semibold text-white transition hover:bg-green-700 disabled:bg-gray-300"
+        className="
+          w-full
+          rounded-xl
+          bg-green-600
+          py-3
+          font-semibold
+          text-white
+          transition
+          hover:bg-green-700
+          disabled:bg-gray-300
+        "
       >
-        {book.stock > 0
-          ? "🛒 カートへ追加"
-          : "在庫なし"}
+        {
+          book.stock -
+          cart.filter(
+            (item) => item.bookId === book.id
+          ).length
+          > 0
+            ? "🛒 カートへ追加"
+            : "在庫なし"
+        }
       </button>
 
     </div>
