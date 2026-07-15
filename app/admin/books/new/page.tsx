@@ -35,9 +35,7 @@ export default function NewBookPage() {
 
     if (
       !book.title.trim() ||
-      !book.author.trim() ||
       !book.isbn.trim() ||
-      !book.publisher.trim() ||
       !book.publishDate ||
       !book.category.trim() ||
       book.stock <= 0 ||
