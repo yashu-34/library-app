@@ -395,13 +395,26 @@ if(loading){
 
 return(
 
-<main className="p-6">
+<main className="flex min-h-screen items-center justify-center bg-gray-100">
 
-<p>
+  <div className="rounded-2xl bg-white p-10 shadow-lg">
 
-読み込み中...
+    <div className="flex flex-col items-center">
 
-</p>
+      {/* ローディングスピナー */}
+      <div className="h-14 w-14 animate-spin rounded-full border-4 border-gray-300 border-t-green-600"></div>
+
+      <h2 className="mt-6 text-xl font-bold text-gray-800">
+        商品情報を読み込み中...
+      </h2>
+
+      <p className="mt-2 text-sm text-gray-500">
+        少々お待ちください
+      </p>
+
+    </div>
+
+  </div>
 
 </main>
 

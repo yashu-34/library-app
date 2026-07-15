@@ -68,11 +68,11 @@ export default function RegisterPage() {
           <div className="text-6xl">📚</div>
 
           <h1 className="mt-3 text-3xl font-bold text-blue-700">
-            図書館利用者登録
+            商品名利用者登録
           </h1>
 
           <p className="mt-2 text-gray-500">
-            図書館貸出システムへようこそ
+            ようこそ
           </p>
 
         </div>
