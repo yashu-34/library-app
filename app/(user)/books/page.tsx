@@ -309,20 +309,17 @@ item.status==="borrowed"
 
 
 
-
-
-
 const handleAddCart = async (book: Book) => {
 
-  // 現在カートに入っている同じ商品の数
   const sameBookCount = cart.filter(
     (item) => item.bookId === book.id
   ).length;
 
-  // 全体で借りられる数（貸出中 + カート）
+
+  // 現在借りている数 + カート内
   const totalCount = borrowCount + cart.length;
 
-  // 全体5個まで
+
   if (totalCount >= 5) {
 
     setMessage("借りられる商品は合計5個までです");
@@ -332,7 +329,7 @@ const handleAddCart = async (book: Book) => {
     return;
   }
 
-  // 同じ商品は5個まで
+
   if (sameBookCount >= 5) {
 
     setMessage("同じ商品は5個までです");
@@ -342,7 +339,7 @@ const handleAddCart = async (book: Book) => {
     return;
   }
 
-  // 在庫以上は追加不可
+
   if (sameBookCount >= book.stock) {
 
     setMessage("在庫以上は追加できません");
@@ -352,24 +349,36 @@ const handleAddCart = async (book: Book) => {
     return;
   }
 
-  await addCart({
-    id: crypto.randomUUID(),
+
+
+  // カート追加
+  addCart({
+
+    id: book.id,
+
     bookId: book.id,
+
     title: book.title,
+
     author: book.author,
+
     imageUrl: book.imageUrl,
+
     stock: book.stock,
+
   });
 
-  setMessage(`${book.title}をカートに追加しました`);
-  alert(`${book.title}をカートに追加しました`);
 
-  setTimeout(() => setMessage(""), 3000);
+
+  setMessage(
+    `${book.title}をカートへ追加しました`
+  );
+
+
+  setTimeout(() => setMessage(""),3000);
+
+
 };
-
-
-
-
 
 
 
