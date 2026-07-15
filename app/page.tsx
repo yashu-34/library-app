@@ -33,7 +33,7 @@ export default function Home() {
         if (role === "admin") {
           router.replace("/admin");
         } else {
-          router.replace("/dashboard");
+          router.replace("/books");
         }
       } catch (error) {
         console.error("ユーザー情報の取得に失敗しました", error);
