@@ -198,24 +198,6 @@ return;
 
 
 
-
-// 合計5冊制限
-
-if(cart.length >=5){
-
-alert(
-"借りられる本は5冊までです"
-);
-
-return;
-
-}
-
-
-
-
-
-
 await addDoc(
 
 collection(
