@@ -48,7 +48,7 @@ export default function LoginPage() {
       if (role === "admin") {
         router.push("/admin");
       } else {
-        router.push("/dashboard");
+        router.push("/books");
       }
 
     } catch (error: any) {
@@ -92,13 +92,8 @@ export default function LoginPage() {
           </div>
 
           <h1 className="mt-3 text-3xl font-bold text-blue-700">
-            図書館貸出システム
+            商品貸出システム
           </h1>
-
-          <p className="mt-2 text-gray-500">
-            ログインして図書を借りましょう
-          </p>
-
         </div>
 
         <div className="mt-8 space-y-5">

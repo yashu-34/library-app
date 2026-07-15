@@ -1,5 +1,7 @@
 "use client";
 
+import Sidebar from "@/components/common/Sidebar";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import {
@@ -354,33 +356,58 @@ return(
 return(
 
 
-<main className="
-min-h-screen
-bg-gray-100
-p-8
-">
+<div className="flex min-h-screen bg-gray-100">
+
+    <Sidebar />
+
+    <main className="flex-1">
 
 
+<header
+  className="
+    fixed
+    top-0
+    left-0
+    right-0
+    z-40
+    bg-gradient-to-r
+    from-amber-700
+    via-yellow-600
+    to-amber-800
+    text-white
+    shadow-lg
+  "
+>
+  <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-4 lg:px-8">
 
-<h1 className="
-mb-8
-text-3xl
-font-bold
-text-gray-900
-">
+    <div className="pl-12 lg:pl-0">
 
-📖 貸出管理
+      <h1 className="text-2xl font-bold">
+        📖 貸出履歴
+      </h1>
 
-</h1>
+      <p className="text-sm text-yellow-100">
+        貸出中・返却済みの商品を確認できます
+      </p>
 
+    </div>
 
+    <Link
+      href="/books"
+      className="rounded-xl bg-blue-600 px-5 py-3 font-bold hover:bg-blue-700"
+    >
+      📚 商品一覧
+    </Link>
 
+  </div>
+</header>
 
 
 
 
 
 <div className="
+mt-30
 mb-6
 flex
 gap-4
@@ -650,6 +677,7 @@ text-blue-600
 
 </main>
 
+</div>
 
 );
 

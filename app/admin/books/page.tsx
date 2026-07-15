@@ -60,8 +60,6 @@ export default function BooksPage() {
 
             <p>販売名：{book.author}</p>
 
-            <p>販売会社：{book.publisher}</p>
-
             <p>発売日：{book.publishDate}</p>
 
             <p>カテゴリ：{book.category}</p>

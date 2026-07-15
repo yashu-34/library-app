@@ -3,6 +3,8 @@
 import { useCart } from "@/components/user/CartProvider";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Sidebar from "@/components/common/Sidebar";
+import Image from "next/image";
 
 import {
   collection,
@@ -207,33 +209,20 @@ rentalQuery
 
 
 
-const currentBorrowCount =
 rentalSnapshot.size;
 
 
+// 同じ商品の個数をチェック
+const bookCountMap: Record<string, number> = {};
 
+for (const book of cart) {
+  bookCountMap[book.bookId] = (bookCountMap[book.bookId] || 0) + 1;
 
-
-if(
-currentBorrowCount + cart.length > 5
-){
-
-
-alert(
-
-`現在${currentBorrowCount}個借りています。最大5冊までです。`
-
-);
-
-
-return;
-
-
+  if (bookCountMap[book.bookId] > 5) {
+    alert(`「${book.title}」は同じ商品を5個までしか貸出できません。`);
+    return;
+  }
 }
-
-
-
-
 
 
 
@@ -423,73 +412,63 @@ alert(
 return(
 
 
-<main className="
-min-h-screen
-bg-gray-100
-p-4
-md:p-10
-">
+<div className="flex min-h-screen bg-gray-100">
+
+    <Sidebar />
+
+    <main className="flex-1">
+
+<header
+  className="
+    fixed
+    top-0
+    left-0
+    right-0
+    z-40
+    bg-gradient-to-r
+    from-amber-700
+    via-yellow-600
+    to-amber-800
+    text-white
+    shadow-lg
+  "
+>
+  <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-4 lg:px-8">
+
+    {/* 左側 */}
+    <div className="pl-12 lg:pl-0">
+
+      <h1 className="text-2xl font-bold">
+        🛒 貸出カート
+      </h1>
+
+      <p className="text-sm text-yellow-100">
+        貸出する商品を確認してください
+      </p>
+
+    </div>
+
+    {/* 商品一覧へ戻る */}
+    <Link
+      href="/books"
+      className="
+        rounded-xl
+        bg-blue-600
+        px-5
+        py-3
+        font-bold
+        transition
+        hover:bg-blue-700
+      "
+    >
+      📚 商品一覧
+    </Link>
+
+  </div>
+</header>
 
 
-<div className="
-mx-auto
-max-w-4xl
-">
-
-
-
-
-
-
-<h1 className="
-mb-6
-text-2xl
-font-bold
-text-gray-900
-md:text-3xl
-">
-
-🛒 貸出カート
-
-</h1>
-
-
-
-
-
-
-
-
-{
-userName &&
-
-
-<div className="
-mb-6
-rounded-lg
-bg-blue-100
-p-4
-font-bold
-text-blue-800
-">
-
-
-👤 利用者：
-
-{userName}
-
-
-</div>
-
-
-}
-
-
-
-
-
-
-
+<div className="mx-auto mt-28 max-w-5xl p-6">
 
 
 {
@@ -532,97 +511,69 @@ cart.map((book)=>(
 
 
 <div
-
-key={book.id}
-
-className="
-flex
-flex-col
-gap-4
-rounded-lg
-bg-white
-p-5
-shadow
-
-md:flex-row
-md:items-center
-md:justify-between
-"
-
+  key={book.id}
+  className="
+    flex
+    flex-col
+    gap-5
+    rounded-2xl
+    bg-white
+    p-5
+    shadow
+    md:flex-row
+    md:items-center
+    md:justify-between
+  "
 >
 
+  {/* 商品画像 */}
+  <div className="flex justify-center md:w-40">
 
-<div>
+    <Image
+      src={book.imageUrl || "/images/no-image.png"}
+      alt={book.title}
+      width={120}
+      height={120}
+      className="h-32 w-auto rounded-lg object-contain"
+    />
 
+  </div>
 
-<h2 className="
-text-lg
-font-bold
-text-gray-900
-">
+  {/* 商品情報 */}
+  <div className="flex-1">
 
+    <h2 className="text-xl font-bold text-gray-900">
+      📚 {book.title}
+    </h2>
 
-📚 {book.title}
+    <p className="mt-2 text-gray-500">
+      販売名
+    </p>
 
+    <p className="font-semibold text-gray-800">
+      {book.author}
+    </p>
 
-</h2>
+  </div>
 
-
-
-
-<p className="
-text-sm
-text-gray-500
-">
-
-
-著者：
-
-{book.author}
-
-
-</p>
-
-
-
-</div>
-
-
-
-
-
-
-<button
-
-onClick={()=>removeCart(book.id)}
-
-className="
-w-full
-rounded-lg
-bg-red-100
-px-4
-py-3
-font-bold
-text-red-600
-hover:bg-red-200
-
-md:w-auto
-"
-
->
-
-
-削除
-
-
-</button>
-
-
-
-
+  {/* 削除ボタン */}
+  <button
+    onClick={() => removeCart(book.id)}
+    className="
+      rounded-xl
+      bg-red-100
+      px-6
+      py-3
+      font-bold
+      text-red-600
+      transition
+      hover:bg-red-200
+    "
+  >
+    🗑 削除
+  </button>
 
 </div>
-
 
 
 ))
@@ -767,6 +718,7 @@ hover:bg-gray-700
 
 </main>
 
+</div>
 
 );
 

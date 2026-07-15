@@ -533,7 +533,7 @@ font-bold
 text-gray-900
 ">
 
-🔒 管理者 本編集
+🔒 管理者 商品編集
 
 </h1>
 
@@ -549,11 +549,9 @@ text-gray-900
 
 title:"タイトル",
 
-author:"著者",
+author:"販売名",
 
-isbn:"ISBN",
-
-publisher:"出版社",
+isbn:"説明",
 
 category:"カテゴリ"
 

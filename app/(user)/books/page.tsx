@@ -22,6 +22,7 @@ import {
 
 import { useRouter } from "next/navigation";
 
+import Sidebar from "@/components/common/Sidebar";
 
 
 interface Book {
@@ -311,103 +312,59 @@ item.status==="borrowed"
 
 
 
+const handleAddCart = async (book: Book) => {
 
+  // 現在カートに入っている同じ商品の数
+  const sameBookCount = cart.filter(
+    (item) => item.bookId === book.id
+  ).length;
 
-// カート追加
+  // 全体で借りられる数（貸出中 + カート）
+  const totalCount = borrowCount + cart.length;
 
-const handleAddCart = async(
-book:Book
-)=>{
+  // 全体5個まで
+  if (totalCount >= 5) {
 
+    setMessage("借りられる商品は合計5個までです");
 
+    setTimeout(() => setMessage(""), 3000);
 
-const cartCount = cart.length;
+    return;
+  }
 
+  // 同じ商品は5個まで
+  if (sameBookCount >= 5) {
 
+    setMessage("同じ商品は5個までです");
 
-if(
-borrowCount + cartCount >= 5
-){
+    setTimeout(() => setMessage(""), 3000);
 
+    return;
+  }
 
-setMessage(
+  // 在庫以上は追加不可
+  if (sameBookCount >= book.stock) {
 
-"借りられる個数は最大5個までです"
+    setMessage("在庫以上は追加できません");
 
-);
+    setTimeout(() => setMessage(""), 3000);
 
+    return;
+  }
 
-setTimeout(()=>setMessage(""),3000);
+  await addCart({
+    id: crypto.randomUUID(),
+    bookId: book.id,
+    title: book.title,
+    author: book.author,
+    imageUrl: book.imageUrl,
+    stock: book.stock,
+  });
 
+  setMessage(`${book.title}をカートに追加しました`);
+  alert(`${book.title}をカートに追加しました`);
 
-return;
-
-
-}
-
-
-
-
-
-
-if(
-book.stock <=0
-){
-
-
-setMessage(
-
-"在庫がありません"
-
-);
-
-
-setTimeout(()=>setMessage(""),3000);
-
-
-return;
-
-
-}
-
-
-
-
-
-
-
-await addCart({
-
-id:"",
-
-bookId:book.id,
-
-title:book.title,
-
-author:book.author,
-
-imageUrl:book.imageUrl,
-
-stock:book.stock
-
-});
-
-
-
-
-
-setMessage(
-
-`${book.title}をカートに追加しました`
-
-);
-
-
-
-setTimeout(()=>setMessage(""),3000);
-
-
-
+  setTimeout(() => setMessage(""), 3000);
 };
 
 
@@ -462,56 +419,80 @@ return(
 
 return(
 
+<div className="flex min-h-screen bg-gray-100">
 
-<main className="
-min-h-screen
-bg-gray-100
-p-4
-sm:p-6
-md:p-8
-">
+    <Sidebar />
 
+    <main className="flex-1">
 
+        <div className="mx-auto  px-0">
 
+<header
+  className="
+    fixed
+    top-0
+    left-0
+    right-0
+    z-40
+    bg-gradient-to-r
+    from-amber-700
+    via-yellow-600
+    to-amber-800
+    text-white
+    shadow-lg
+  "
+>
+  <div className="mx-auto flex h-25 max-w-7xl items-center justify-between px-4 lg:px-8">
 
+    {/* 左側 */}
+    <div className="flex items-center gap-3">
 
+      {/* Sidebar.tsx のハンバーガーボタンと重ならないようにスマホだけ余白 */}
+      <div className="pl-12 lg:pl-0 flex items-center gap-3">
 
-<div className="
-mx-auto
-max-w-7xl
-">
+        <div className="flex h-12 w-12 text-2xl items-center justify-center rounded-full bg-white/20 text-xl">
+          📦
+        </div>
 
+        <div>
+          <h1 className="text-lg font-bold sm:text-xl">
+            商品貸出システム
+          </h1>
 
-<header className="mb-8 flex items-center justify-between">
+          <p className="hidden text-xs text-yellow-100 sm:block">
+            商品の検索・貸出・在庫確認ができます。
+          </p>
+        </div>
 
-  <div className="flex items-center gap-4">
+      </div>
 
-    <button
-      onClick={() => router.push("/dashboard")}
-      className="rounded-xl bg-white px-4 py-3 shadow transition hover:bg-gray-100"
+    </div>
+
+    {/* 右側 */}
+    <Link
+      href="/cart"
+      className="
+        flex
+        items-center
+        gap-2
+        rounded-xl
+        bg-green-600
+        px-4
+        py-2
+        font-bold
+        transition
+        hover:bg-green-700
+      "
     >
-      ← ホーム
-    </button>
+      🛒
 
-    <h1 className="text-3xl font-bold text-gray-900">
-      📚 商品検索
-    </h1>
+      <span className="rounded-full bg-white px-2 py-1 text-green-700">
+        {cart.length}
+      </span>
+    </Link>
 
   </div>
-
-  <Link
-    href="/cart"
-    className="flex items-center rounded-xl bg-green-600 px-5 py-3 font-bold text-white shadow hover:bg-green-700"
-  >
-    🛒 カート
-
-    <span className="ml-3 rounded-full bg-white px-3 py-1 text-green-700">
-      {cart.length}
-    </span>
-  </Link>
-
 </header>
-
 
 {
 message &&
@@ -541,108 +522,134 @@ text-white
 
 
 
-<input
+{/* 検索 */}
+<div className="mt-24 mb-8 rounded-2xl bg-white p-6 shadow-lg">
 
-placeholder="
-タイトル・著者で検索
-"
+  <div className="mb-5 flex items-center gap-3">
 
-value={keyword}
+    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-2xl">
+      🔍
+    </div>
 
-onChange={(e)=>
+    <div>
 
-setKeyword(
-e.target.value
-)
+      <h2 className="text-xl font-bold text-gray-900">
+        商品検索
+      </h2>
 
-}
+      <p className="text-sm text-gray-500">
+        商品名または販売名で検索できます
+      </p>
 
-className="
-mb-6
-w-full
-rounded-lg
-border
-bg-white
-p-4
-text-gray-900
-"
+    </div>
 
-/>
-
-
-<div className="mb-10">
-  <h2 className="mb-5 flex items-center gap-2 text-2xl font-bold text-gray-800">
-    📚 カテゴリから探す
-  </h2>
-
-  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-    <button
-      onClick={() => setSelectedCategory("")}
-      className={`
-      rounded-2xl border p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg
-      ${
-        selectedCategory === ""
-          ? "border-blue-600 bg-blue-600 text-black"
-          : "bg-white"
-      }
-      `}
-    >
-      <div className="mb-3 text-4xl">📚</div>
-      <p className="font-bold text-black">すべて</p>
-    </button>
-
-    {categories.map((category) => (
-    <button
-        key={category}
-        onClick={() => setSelectedCategory(category)}
-        className={`
-        rounded-2xl
-        border
-        p-5
-        shadow-sm
-        transition-all
-        duration-300
-        hover:-translate-y-1
-        hover:shadow-lg
-        ${
-            selectedCategory === category
-            ? "border-blue-600 bg-blue-600 text-white"
-            : "border-gray-200 bg-white text-gray-800 hover:bg-blue-50"
-        }
-        `}
-    >
-        <div className="mb-3 text-4xl">
-        {categoryIcons[category]}
-        </div>
-
-        <p
-        className={`font-bold ${
-            selectedCategory === category
-            ? "text-white"
-            : "text-gray-800"
-        }`}
-        >
-        {category}
-        </p>
-    </button>
-    ))}
   </div>
+
+  <div className="relative">
+
+    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400">
+      🔍
+    </span>
+
+    <input
+      type="text"
+      placeholder="タイトル・販売名で検索"
+      value={keyword}
+      onChange={(e) => setKeyword(e.target.value)}
+      className="
+        w-full
+        rounded-xl
+        border
+        border-gray-300
+        bg-gray-50
+        py-4
+        pl-12
+        pr-4
+        text-gray-900
+        outline-none
+        transition
+        focus:border-blue-500
+        focus:bg-white
+        focus:ring-4
+        focus:ring-blue-100
+      "
+    />
+
+  </div>
+
 </div>
 
 
+{/* カテゴリ */}
+<div className="mb-10 rounded-2xl bg-white p-6 shadow-lg">
 
-<div className="
-grid
-grid-cols-1
-gap-5
-sm:grid-cols-2
-lg:grid-cols-4
-">
+  <div className="mb-6 flex items-center gap-3">
+
+    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-2xl">
+      📂
+    </div>
+
+    <div>
+
+      <h2 className="text-xl font-bold text-gray-900">
+        カテゴリから探す
+      </h2>
+
+      <p className="text-sm text-gray-500">
+        カテゴリを選択して商品を絞り込みできます
+      </p>
+
+    </div>
+
+  </div>
+
+  <div className="flex flex-wrap gap-3">
+
+    {/* すべて */}
+    <button
+      onClick={() => setSelectedCategory("")}
+      className={`rounded-full px-6 py-3 text-sm font-semibold transition-all duration-300 ${
+        selectedCategory === ""
+          ? "bg-blue-600 text-white shadow-md"
+          : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+      }`}
+    >
+      すべて
+    </button>
+
+    {/* カテゴリ一覧 */}
+    {categories.map((category) => (
+      <button
+        key={category}
+        onClick={() => setSelectedCategory(category)}
+        className={`rounded-full px-6 py-3 text-sm font-semibold transition-all duration-300 ${
+          selectedCategory === category
+            ? "bg-blue-600 text-white shadow-md"
+            : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+        }`}
+      >
+        {category}
+      </button>
+    ))}
+
+  </div>
+
+</div>
 
 
-
-
-
+<div
+  className="
+    grid
+    justify-center
+    grid-cols-2
+    gap-4
+    sm:grid-cols-2
+    md:grid-cols-3
+    lg:grid-cols-4
+    xl:grid-cols-5
+    2xl:grid-cols-6
+  "
+>
 
 
 {
@@ -652,210 +659,103 @@ filteredBooks.map((book)=>(
 
 
 <div
-
-key={book.id}
-
-className="
-rounded-xl
-bg-white
-p-5
-shadow
-"
-
+  key={book.id}
+  className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
 >
+  {/* 商品画像 */}
+  <div className="relative flex h-40 items-center justify-center bg-gray-100">
 
+    {/* カテゴリ */}
+    <span
+      className="
+        absolute
+        left-3
+        top-3
+        rounded-full
+        bg-amber-600
+        px-3
+        py-1
+        text-xs
+        font-bold
+        text-white
+        shadow
+      "
+    >
+      {book.category}
+    </span>
 
+    <Image
+      src={book.imageUrl || "/images/no-image.png"}
+      alt={book.title}
+      width={140}
+      height={180}
+      className="h-full w-auto object-contain"
+    />
 
+  </div>
 
+  {/* 商品情報 */}
+  <div className="p-5">
 
+    {/* 商品名 */}
+    <h2 className="line-clamp-2 text-lg font-bold text-gray-900">
+      {book.title}
+    </h2>
 
+    {/* 販売名 */}
+    <p className="mt-2 text-sm text-gray-500">
+      販売名
+    </p>
 
-<div className="
-flex
-justify-center
-">
+    <p className="font-medium text-gray-800">
+      {book.author}
+    </p>
 
+    {/* 在庫 */}
+    <div className="mt-4 flex items-center justify-between">
 
-<Image
+      <span className="text-sm text-gray-500">
+        在庫状況
+      </span>
 
-src={
-book.imageUrl ||
-"/images/no-image.png"
-}
+      <span
+        className={`rounded-full px-3 py-1 text-sm font-bold ${
+          book.stock > 0
+            ? "bg-green-100 text-green-700"
+            : "bg-red-100 text-red-600"
+        }`}
+      >
+        {book.stock > 0
+          ? `残り ${book.stock}個`
+          : "在庫なし"}
+      </span>
 
-alt={book.title}
+    </div>
 
-width={150}
+    {/* ボタン */}
+    <div className="mt-6 space-y-3">
 
-height={220}
+      <Link
+        href={`/books/${book.id}`}
+        className="block rounded-xl bg-blue-600 py-3 text-center font-semibold text-white transition hover:bg-blue-700"
+      >
+        詳細を見る
+      </Link>
 
-className="
-rounded-lg
-object-cover
-"
+      <button
+        disabled={book.stock <= 0}
+        onClick={() => handleAddCart(book)}
+        className="w-full rounded-xl bg-green-600 py-3 font-semibold text-white transition hover:bg-green-700 disabled:bg-gray-300"
+      >
+        {book.stock > 0
+          ? "🛒 カートへ追加"
+          : "在庫なし"}
+      </button>
 
-/>
+    </div>
 
-
+  </div>
 </div>
-
-
-
-
-
-
-
-
-<h2 className="
-mt-4
-text-lg
-font-bold
-text-gray-900
-">
-
-{book.title}
-
-</h2>
-
-
-
-
-
-
-
-
-<p className="
-mt-2
-text-gray-700
-">
-
-著者：
-{book.author}
-
-</p>
-
-
-
-
-
-
-
-
-
-<p className={`
-mt-3
-font-bold
-
-${
-book.stock > 0
-
-?
-
-"text-green-600"
-
-:
-
-"text-red-600"
-
-}
-
-`}>
-
-貸出可能：
-
-{book.stock}
-
-個
-
-</p>
-
-
-
-
-
-
-
-
-
-<Link
-
-href={`/books/${book.id}`}
-
-className="
-mt-4
-block
-rounded-lg
-bg-blue-600
-p-3
-text-center
-font-bold
-text-white
-"
-
->
-
-詳細を見る
-
-</Link>
-
-
-
-
-
-
-
-
-<button
-
-
-disabled={
-book.stock <=0
-}
-
-
-
-onClick={()=>handleAddCart(book)}
-
-
-className="
-mt-3
-w-full
-rounded-lg
-bg-green-600
-p-3
-font-bold
-text-white
-disabled:bg-gray-400
-"
-
->
-
-
-{
-
-book.stock >0
-
-?
-
-"🛒 カートへ追加"
-
-:
-
-"在庫なし"
-
-}
-
-
-</button>
-
-
-
-
-
-
-
-</div>
-
 
 
 ))
@@ -876,6 +776,8 @@ book.stock >0
 
 
 </main>
+
+</div>
 
 
 );

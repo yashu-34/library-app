@@ -80,7 +80,7 @@ export default function NewBookPage() {
         updatedAt: serverTimestamp(),
       });
 
-      alert("本を登録しました");
+      alert("商品を登録しました");
 
       router.push("/admin/books");
     } catch (error) {
@@ -94,7 +94,7 @@ export default function NewBookPage() {
   return (
     <main className="mx-auto max-w-2xl p-8">
       <h1 className="mb-8 text-3xl font-bold text-black">
-        📚 本を登録
+        📚 商品を登録
       </h1>
 
       {errorMessage && (
@@ -119,7 +119,7 @@ export default function NewBookPage() {
 
         <input
           className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-          placeholder="著者"
+          placeholder="販売名"
           value={book.author}
           onChange={(e) =>
             setBook({
@@ -131,24 +131,12 @@ export default function NewBookPage() {
 
         <input
           className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-          placeholder="ISBN"
+          placeholder="説明"
           value={book.isbn}
           onChange={(e) =>
             setBook({
               ...book,
               isbn: e.target.value,
-            })
-          }
-        />
-
-        <input
-          className="w-full rounded-lg border border-gray-300 bg-white p-3 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-          placeholder="出版社"
-          value={book.publisher}
-          onChange={(e) =>
-            setBook({
-              ...book,
-              publisher: e.target.value,
             })
           }
         />

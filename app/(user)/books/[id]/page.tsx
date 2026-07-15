@@ -25,6 +25,8 @@ import {
   useCart
 } from "@/components/user/CartProvider";
 
+import Sidebar from "@/components/common/Sidebar";
+
 
 
 
@@ -399,29 +401,6 @@ return;
 
 
 
-
-// 5冊制限
-
-if(
-borrowCount + cart.length >=5
-){
-
-
-alert(
-"借りられる個数は最大5個までです"
-);
-
-
-return;
-
-
-}
-
-
-
-
-
-
 // 在庫確認
 
 if(
@@ -529,18 +508,73 @@ justify-center
 return(
 
 
-<main className="
-min-h-screen
-bg-gray-100
-p-4
-md:p-8
-">
+<div className="flex min-h-screen bg-gray-100">
 
+  <Sidebar />
 
+  <main className="flex-1">
+
+    {/* ヘッダー */}
+    <header
+      className="
+        fixed
+        top-0
+        left-0
+        right-0
+        z-40
+        bg-gradient-to-r
+        from-amber-700
+        via-yellow-600
+        to-amber-800
+        text-white
+        shadow-lg
+      "
+    >
+
+      <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-4 lg:px-8">
+
+        <div className="pl-12 lg:pl-0">
+
+          <h1 className="text-2xl font-bold">
+            📦 商品詳細
+          </h1>
+
+          <p className="text-sm text-yellow-100">
+            商品情報を確認できます
+          </p>
+
+        </div>
+
+        <Link
+          href="/cart"
+          className="
+            flex
+            items-center
+            gap-2
+            rounded-xl
+            bg-green-600
+            px-4
+            py-2
+            font-bold
+            hover:bg-green-700
+          "
+        >
+          🛒
+
+          <span className="rounded-full bg-white px-2 py-1 text-green-700">
+            {cart.length}
+          </span>
+
+        </Link>
+
+      </div>
+
+    </header>
 
 
 
 <div className="
+mt-20
 mx-auto
 max-w-5xl
 rounded-lg
@@ -662,7 +696,7 @@ text-gray-800
 <p>
 
 <strong>
-著者：
+販売名：
 </strong>
 
 {book.author}
@@ -674,19 +708,7 @@ text-gray-800
 <p>
 
 <strong>
-出版社：
-</strong>
-
-{book.publisher}
-
-</p>
-
-
-
-<p>
-
-<strong>
-ISBN：
+説明：
 </strong>
 
 {book.isbn}
@@ -710,7 +732,7 @@ ISBN：
 <p>
 
 <strong>
-出版日：
+販売日：
 </strong>
 
 {book.publishDate}
@@ -754,7 +776,7 @@ remainingStock>0
 
 {remainingStock}
 
-冊
+個
 
 
 
@@ -880,6 +902,7 @@ hover:bg-gray-700
 
 </main>
 
+</div>
 
 );
 
