@@ -33,17 +33,7 @@ export default function NewBookPage() {
   const saveBook = async () => {
     setErrorMessage("");
 
-    if (
-      !book.title.trim() ||
-      !book.isbn.trim() ||
-      !book.publishDate ||
-      !book.category.trim() ||
-      book.stock <= 0 ||
-      !imageFile
-    ) {
-      setErrorMessage("すべての項目を入力してください。表紙画像も選択してください。");
-      return;
-    }
+    
     try {
       setLoading(true);
 
