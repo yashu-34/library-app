@@ -308,53 +308,67 @@ item.status==="borrowed"
 
 
 
-
 const handleAddCart = async (book: Book) => {
 
+
+  // 同じ商品のカート数
   const sameBookCount = cart.filter(
     (item) => item.bookId === book.id
   ).length;
 
 
-  // 現在借りている数 + カート内
-  const totalCount = borrowCount + cart.length;
+  // 同じ商品5個まで
+  if(sameBookCount >= 5){
 
 
-  if (totalCount >= 5) {
+    setMessage(
+      "同じ商品は5個までです"
+    );
 
-    setMessage("借りられる商品は合計5個までです");
 
-    setTimeout(() => setMessage(""), 3000);
+    setTimeout(
+      ()=>setMessage(""),
+      3000
+    );
+
 
     return;
-  }
 
-
-  if (sameBookCount >= 5) {
-
-    setMessage("同じ商品は5個までです");
-
-    setTimeout(() => setMessage(""), 3000);
-
-    return;
-  }
-
-
-  if (sameBookCount >= book.stock) {
-
-    setMessage("在庫以上は追加できません");
-
-    setTimeout(() => setMessage(""), 3000);
-
-    return;
   }
 
 
 
-  // カート追加
-  addCart({
 
-    id: book.id,
+
+
+  // 在庫確認
+
+  if(sameBookCount >= book.stock){
+
+
+    setMessage(
+      "在庫以上は追加できません"
+    );
+
+
+    setTimeout(
+      ()=>setMessage(""),
+      3000
+    );
+
+
+    return;
+
+  }
+
+
+
+
+
+
+  await addCart({
+
+    id: crypto.randomUUID(),
 
     bookId: book.id,
 
@@ -370,16 +384,19 @@ const handleAddCart = async (book: Book) => {
 
 
 
+
   setMessage(
     `${book.title}をカートへ追加しました`
   );
 
 
-  setTimeout(() => setMessage(""),3000);
+  setTimeout(
+    ()=>setMessage(""),
+    3000
+  );
 
 
 };
-
 
 
 
