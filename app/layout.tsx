@@ -15,10 +15,22 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Products",
   description: "商品貸出システム",
+
   icons: {
-    icon: "/icon.png",
+    icon: [
+      {
+        url: "/icon.png",
+        type: "image/png",
+      },
+      {
+        url: "/favicon.ico",
+        type: "image/x-icon",
+      },
+    ],
+
     shortcut: "/icon.png",
-    apple: "/icon.png",
+
+    apple: "/apple-touch-icon.png",
   },
 };
 
