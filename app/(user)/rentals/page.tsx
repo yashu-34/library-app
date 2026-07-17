@@ -356,7 +356,7 @@ return(
 return(
 
 
-<div className="flex min-h-screen bg-gray-100">
+<div className="flex min-h-screen bg-gray-100 lg:ml-72">
 
     <Sidebar />
 
@@ -393,7 +393,7 @@ return(
     </div>
 
     <Link
-      href="/books"
+      href="/product_search"
       className="rounded-xl bg-blue-600 px-5 py-3 font-bold hover:bg-blue-700"
     >
       📚 商品一覧

@@ -24,6 +24,19 @@ import { useRouter } from "next/navigation";
 
 import Sidebar from "@/components/common/Sidebar";
 
+import {
+  FaBoxOpen,
+  FaShoppingCart,
+  FaSearch,
+  FaFolderOpen,
+} from "react-icons/fa";
+
+import { FaArrowRight } from "react-icons/fa";
+
+import {
+  HiOutlineShoppingCart,
+} from "react-icons/hi";
+
 
 interface Book {
 
@@ -435,7 +448,7 @@ if(loading){
 
 return(
 
-<main className="flex min-h-screen items-center justify-center bg-gray-100">
+<main className="flex min-h-screen items-center justify-center bg-gray-100 lg:ml-72">
 
   <div className="rounded-2xl bg-white p-10 shadow-lg">
 
@@ -472,7 +485,7 @@ return(
 
 return(
 
-<div className="flex min-h-screen bg-gray-100">
+<div className="flex min-h-screen bg-gray-100 lg:ml-72">
 
     <Sidebar />
 
@@ -487,12 +500,11 @@ return(
     left-0
     right-0
     z-40
-    bg-gradient-to-r
-    from-amber-700
-    via-yellow-600
-    to-amber-800
-    text-white
+    bg-[#7FFFD4]
+    text-gray-900
     shadow-lg
+    border-b
+    border-[#5EDFC0]
   "
 >
   <div className="mx-auto flex h-25 max-w-7xl items-center justify-between px-4 lg:px-8">
@@ -503,17 +515,17 @@ return(
       {/* Sidebar.tsx のハンバーガーボタンと重ならないようにスマホだけ余白 */}
       <div className="pl-12 lg:pl-0 flex items-center gap-3">
 
-        <div className="flex h-12 w-12 text-2xl items-center justify-center rounded-full bg-white/20 text-xl">
-          📦
+        <div className="flex h-12 w-12 text-2xl items-center justify-center rounded-full bg-teal-100 text-xl">
+          <FaBoxOpen className="text-3xl text-teal-500" />
         </div>
 
         <div>
-          <h1 className="text-lg font-bold sm:text-xl">
-            商品貸出システム
+          <h1 className="text-lg font-bold sm:text-2xl">
+            サンプル取り寄せ
           </h1>
 
-          <p className="hidden text-xs text-yellow-100 sm:block">
-            商品の検索・貸出・在庫確認ができます。
+          <p className="hidden text-xs text-[#3f3c10] sm:block">
+            商品の検索・取り寄せ・在庫確認ができます。
           </p>
         </div>
 
@@ -529,15 +541,15 @@ return(
         items-center
         gap-2
         rounded-xl
-        bg-green-600
+        bg-teal-600
         px-4
         py-2
         font-bold
         transition
-        hover:bg-green-700
+        hover:bg-teal-700
       "
     >
-      🛒
+      <HiOutlineShoppingCart className="text-xl text-white"/>
 
       <span className="rounded-full bg-white px-2 py-1 text-green-700">
         {cart.length}
@@ -554,7 +566,7 @@ message &&
 <div className="
 mb-5
 rounded-lg
-bg-blue-600
+bg-teal-500
 p-4
 font-bold
 text-white
@@ -576,12 +588,12 @@ text-white
 
 
 {/* 検索 */}
-<div className="mt-24 mb-8 rounded-2xl bg-white p-6 shadow-lg">
+<div className="mt-24 bg-white p-6 shadow-lg">
 
   <div className="mb-5 flex items-center gap-3">
 
-    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-2xl">
-      🔍
+    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-100 text-2xl">
+      <FaSearch className="text-2xl text-teal-500"/>
     </div>
 
     <div>
@@ -600,13 +612,9 @@ text-white
 
   <div className="relative">
 
-    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl text-gray-400">
-      🔍
-    </span>
-
     <input
       type="text"
-      placeholder="タイトル・販売名で検索"
+      placeholder="商品名・販売名で検索"
       value={keyword}
       onChange={(e) => setKeyword(e.target.value)}
       className="
@@ -621,10 +629,10 @@ text-white
         text-gray-900
         outline-none
         transition
-        focus:border-blue-500
+        focus:border-teal-500
         focus:bg-white
         focus:ring-4
-        focus:ring-blue-100
+        focus:ring-teal-100
       "
     />
 
@@ -634,12 +642,12 @@ text-white
 
 
 {/* カテゴリ */}
-<div className="mb-10 rounded-2xl bg-white p-6 shadow-lg">
+<div className="mb-10 bg-white p-6 shadow-lg">
 
   <div className="mb-6 flex items-center gap-3">
 
-    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-2xl">
-      📂
+    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-100">
+      <FaFolderOpen className="text-2xl text-teal-500" />
     </div>
 
     <div>
@@ -663,7 +671,7 @@ text-white
       onClick={() => setSelectedCategory("")}
       className={`rounded-full px-6 py-3 text-sm font-semibold transition-all duration-300 ${
         selectedCategory === ""
-          ? "bg-blue-600 text-white shadow-md"
+          ? "bg-teal-500 text-white shadow-md"
           : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
       }`}
     >
@@ -677,7 +685,7 @@ text-white
         onClick={() => setSelectedCategory(category)}
         className={`rounded-full px-6 py-3 text-sm font-semibold transition-all duration-300 ${
           selectedCategory === category
-            ? "bg-blue-600 text-white shadow-md"
+            ? "bg-teal-500 text-white shadow-md"
             : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
         }`}
       >
@@ -696,6 +704,7 @@ text-white
     justify-center
     grid-cols-2
     gap-4
+    px-4
     sm:grid-cols-2
     md:grid-cols-3
     lg:grid-cols-4
@@ -713,10 +722,10 @@ filteredBooks.map((book)=>(
 
 <div
   key={book.id}
-  className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+  className="flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
 >
   {/* 商品画像 */}
-  <div className="relative flex h-40 items-center justify-center bg-gray-100">
+  <div className="relative flex h-50 items-center justify-center overflow-hidden bg-gray-50 p-4">
 
     {/* カテゴリ */}
     <span
@@ -740,29 +749,31 @@ filteredBooks.map((book)=>(
     <Image
       src={book.imageUrl || "/images/no-image.png"}
       alt={book.title}
-      width={140}
-      height={180}
-      className="h-full w-auto object-contain"
+      width={220}
+      height={220}
+      className="h-44 w-44 object-contain"
     />
 
   </div>
 
   {/* 商品情報 */}
-  <div className="p-5">
+  <div className="flex flex-1 flex-col p-5">
 
     {/* 商品名 */}
-    <h2 className="line-clamp-2 text-lg font-bold text-gray-900">
+    <h2 className="h-14 line-clamp-2 text-lg font-bold text-gray-900">
       {book.title}
     </h2>
 
     {/* 販売名 */}
-    <p className="mt-2 text-sm text-gray-500">
-      販売名
-    </p>
+    <div className="mt-2 h-12">
+      <p className="text-xs text-gray-500">
+        販売名
+      </p>
 
-    <p className="font-medium text-gray-800">
-      {book.author}
-    </p>
+      <p className="mt-1 font-medium text-gray-800">
+        {book.author}
+      </p>
+    </div>
 
     {/* 在庫 */}
     <div className="mt-4 flex items-center justify-between">
@@ -816,14 +827,17 @@ filteredBooks.map((book)=>(
     </div>
 
     {/* ボタン */}
-    <div className="mt-6 space-y-3">
+    <div className="space-y-3 pt-6">
 
       <Link
-        href={`/books/${book.id}`}
-        className="block rounded-xl bg-blue-600 py-3 text-center font-semibold text-white transition hover:bg-blue-700"
+        href={`/product_search/${book.id}`}
+        className="flex items-center justify-center gap-2 rounded-xl bg-teal-500 py-3 font-semibold text-white trantion hover:bg-teal-700"
       >
-        詳細を見る
+        <span>詳細を見る</span>
+        
+        <FaArrowRight className="text-sm"/>
       </Link>
+
 
       <button
         disabled={
@@ -850,10 +864,18 @@ filteredBooks.map((book)=>(
           book.stock -
           cart.filter(
             (item) => item.bookId === book.id
-          ).length
-          > 0
-            ? "🛒 カートへ追加"
-            : "在庫なし"
+          ).length > 0 ? (
+
+            <div className="flex items-center justify-center gap-2">
+              <HiOutlineShoppingCart className="text-xl" />
+              <span>カートへ追加</span>
+            </div>
+
+          ) : (
+
+            <span>在庫なし</span>
+
+          )
         }
       </button>
 

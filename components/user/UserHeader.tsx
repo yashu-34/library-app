@@ -13,7 +13,7 @@ export default function UserHeader() {
 
       <nav className="flex gap-6">
 
-        <Link href="/books">
+        <Link href="/product_search">
           本一覧
         </Link>
 

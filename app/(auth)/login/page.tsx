@@ -48,7 +48,7 @@ export default function LoginPage() {
       if (role === "admin") {
         router.push("/admin");
       } else {
-        router.push("/books");
+        router.push("/product_search");
       }
 
     } catch (error: any) {

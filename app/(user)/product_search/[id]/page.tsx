@@ -277,7 +277,7 @@ alert(
 );
 
 
-router.push("/books");
+router.push("/product_search");
 
 
 return;
@@ -508,7 +508,7 @@ justify-center
 return(
 
 
-<div className="flex min-h-screen bg-gray-100">
+<div className="flex min-h-screen bg-gray-100 lg:ml-72">
 
   <Sidebar />
 
@@ -862,7 +862,7 @@ hover:bg-blue-700
 
 <Link
 
-href="/books"
+href="/product_search"
 
 className="
 mt-3

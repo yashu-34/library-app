@@ -6,14 +6,24 @@ import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { auth } from "@/firebase/config";
 
+import {
+  HiOutlineHome,
+  HiOutlineClipboardDocumentList,
+  HiOutlineUser,
+  HiOutlineShoppingCart,
+  HiOutlineArrowLeftOnRectangle,
+  HiOutlineBars3,
+  HiOutlineXMark,
+} from "react-icons/hi2";
+
+import { AiFillAlert } from "react-icons/ai";
+
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  // スマホメニュー開閉
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // ログアウト
   const handleLogout = async () => {
     try {
       await signOut(auth);
@@ -24,55 +34,43 @@ export default function Sidebar() {
     }
   };
 
-  // メニュー一覧
   const menus = [
     {
       name: "ホーム",
-      href: "/books",
-      icon: "🏠",
+      href: "/product_search",
+      icon: <HiOutlineHome size={22} />,
     },
     {
-      name: "貸出履歴",
+      name: "履歴",
       href: "/rentals",
-      icon: "📖",
+      icon: <HiOutlineClipboardDocumentList size={22} />,
     },
     {
       name: "マイページ",
       href: "/profile",
-      icon: "👤",
+      icon: <HiOutlineUser size={22} />,
     },
     {
       name: "カート",
       href: "/cart",
-      icon: "🛒",
+      icon: <HiOutlineShoppingCart size={22} />,
     },
   ];
 
   return (
     <>
-      {/* スマホ用ハンバーガーボタン */}
-      <div className="fixed left-4 top-4 z-50 lg:hidden">
+      {/* スマホ用メニューボタン */}
+      <div className="fixed left-3 top-6 z-50 lg:hidden">
         <button
           onClick={() => setMenuOpen(true)}
-          className="rounded-lg bg-amber-900 p-3 text-white shadow-lg"
+          className="rounded-xl bg-teal-600 p-3 text-white shadow-lg transition hover:bg-teal-700"
         >
-          ☰
+          <HiOutlineBars3 size={24} />
         </button>
       </div>
-            {/* PC用サイドバー */}
-      <aside className="hidden min-h-screen w-72 flex-col bg-amber-900 text-white shadow-xl lg:flex">
 
-        {/* ロゴ */}
-        <div className="border-b border-amber-700 p-6">
-          <h1 className="text-3xl font-bold">
-            📚 Products
-          </h1>
-
-          <p className="mt-2 text-sm text-yellow-200">
-            商品貸出システム
-          </p>
-        </div>
-
+      {/* PCサイドバー */}
+      <aside className="hidden fixed left-0 top-24 z-40 h-screen w-72 flex-col bg-gradient-to-b from-teal-500 via-teal-600 to-cyan-700 text-white shadow-xl lg:flex">
         {/* メニュー */}
         <nav className="flex-1 p-4">
           <ul className="space-y-2">
@@ -80,13 +78,24 @@ export default function Sidebar() {
               <li key={menu.href}>
                 <Link
                   href={menu.href}
-                  className={`flex items-center gap-3 rounded-xl px-4 py-3 transition ${
-                    pathname === menu.href
-                      ? "bg-white font-bold text-amber-900"
-                      : "hover:bg-amber-800"
-                  }`}
+                  className={`
+                    flex
+                    items-center
+                    gap-3
+                    rounded-xl
+                    px-4
+                    py-3
+                    transition-all
+                    duration-300
+
+                    ${
+                      pathname === menu.href
+                        ? "bg-white text-teal-700 font-bold shadow"
+                        : "hover:bg-white/20"
+                    }
+                  `}
                 >
-                  <span className="text-xl">{menu.icon}</span>
+                  {menu.icon}
                   <span>{menu.name}</span>
                 </Link>
               </li>
@@ -94,36 +103,89 @@ export default function Sidebar() {
           </ul>
         </nav>
 
+        {/* サービス利用と注意点 */}
+        <div className="mx-4 mb-4 rounded-xl bg-white/10 p-4 text-sm">
+          <h3 className="flex mb-3 border-b border-white/20 pb-2 text-base font-bold items-center justify-center">
+            <AiFillAlert /> サービス利用と注意点
+          </h3>
+
+          <ul className="space-y-2 text-xs leading-5 text-teal-50">
+            <li>• 本サービスは、本店舗限定のサービスです。</li>
+            <li>• サンプルはお一人様1商品1回分です。</li>
+            <li>• 一度にお申込みいただける数量は5包までです。</li>
+            <li>• 商品や在庫状況により、ご希望のサンプルをご用意できない場合があります。</li>
+            <li>• サンプルのお届けには日数がかかる場合があります。</li>
+            <li>• サンプルの転売・譲渡・商用利用はご遠慮ください。</li>
+            <li>• パッケージや仕様は販売商品と異なる場合があります。</li>
+            <li>• 使用中・使用後に異常を感じた場合は直ちに使用を中止してください。</li>
+            <li>• 乳幼児の手の届かない場所で保管してください。</li>
+          </ul>
+        </div>
+
         {/* ログアウト */}
-        <div className="mt-30 border-t border-amber-700 p-4">
+        <div className="
+          flex
+          h-full
+          w-72
+          flex-col
+          text-white">
           <button
             onClick={handleLogout}
-            className="w-full rounded-xl bg-red-600 px-4 py-3 font-bold transition hover:bg-red-700"
+            className="
+              mx-auto
+              flex
+              w-44
+              items-center
+              justify-center
+              gap-2
+              rounded-lg
+              bg-red-500
+              px-3
+              py-2
+              text-sm
+              font-semibold
+              transition
+              hover:bg-red-600
+            "
           >
-            🚪 ログアウト
+            <HiOutlineArrowLeftOnRectangle size={22} />
+            ログアウト
           </button>
         </div>
       </aside>
 
-      {/* スマホ用メニュー */}
+      {/* スマホメニュー */}
       {menuOpen && (
         <div className="fixed inset-0 z-50 bg-black/40 lg:hidden">
+          <div
+            className="
+              h-full
+              w-72
+              bg-gradient-to-b
+              from-teal-500
+              via-teal-600
+              to-cyan-700
+              text-white
+            "
+          >
+            {/* ヘッダー */}
+            <div className="flex items-center justify-between border-b border-white/20 p-5">
+              <div>
+                <h2 className="text-2xl font-bold">
+                  サンプル取り寄せ
+                </h2>
 
-          <div className="h-full w-72 bg-amber-900 text-white">
+                <p className="text-sm text-teal-100">
+                  商品の検索・取り寄せ・在庫確認ができます。
+                </p>
+              </div>
 
-            <div className="flex items-center justify-between border-b border-amber-700 p-5">
-              <h2 className="text-2xl font-bold">
-                📚 Products
-              </h2>
-
-              <button
-                onClick={() => setMenuOpen(false)}
-                className="text-3xl"
-              >
-                ✕
+              <button onClick={() => setMenuOpen(false)}>
+                <HiOutlineXMark size={30} />
               </button>
             </div>
 
+            {/* メニュー */}
             <nav className="p-4">
               <ul className="space-y-2">
                 {menus.map((menu) => (
@@ -131,33 +193,62 @@ export default function Sidebar() {
                     <Link
                       href={menu.href}
                       onClick={() => setMenuOpen(false)}
-                      className={`block rounded-xl px-4 py-3 transition ${
-                        pathname === menu.href
-                          ? "bg-white font-bold text-amber-900"
-                          : "hover:bg-amber-800"
-                      }`}
+                      className={`
+                        flex
+                        items-center
+                        gap-3
+                        rounded-xl
+                        px-4
+                        py-3
+                        transition-all
+
+                        ${
+                          pathname === menu.href
+                            ? "bg-white text-teal-700 font-bold"
+                            : "hover:bg-white/20"
+                        }
+                      `}
                     >
-                      {menu.icon} {menu.name}
+                      {menu.icon}
+                      {menu.name}
                     </Link>
                   </li>
                 ))}
               </ul>
             </nav>
 
-            <div className="border-t border-amber-700 p-4">
+            {/* ログアウト */}
+            <div className="
+              flex
+              h-full
+              w-72
+              flex-col
+              text-white">
               <button
                 onClick={handleLogout}
-                className="w-full rounded-xl bg-red-600 px-4 py-3 font-bold hover:bg-red-700"
-              >
-                🚪 ログアウト
+                className="
+                  mx-auto
+                  flex
+                  w-44
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-lg
+                  bg-red-500
+                  px-3
+                  py-2
+                  text-sm
+                  font-semibold
+                  transition
+                  hover:bg-red-600
+                  ">
+                <HiOutlineArrowLeftOnRectangle size={18} />
+                ログアウト
               </button>
             </div>
-
           </div>
-
         </div>
       )}
-
     </>
   );
 }

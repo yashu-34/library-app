@@ -412,7 +412,7 @@ alert(
 return(
 
 
-<div className="flex min-h-screen bg-gray-100">
+<div className="flex min-h-screen bg-gray-100 lg:ml-72">
 
     <Sidebar />
 
@@ -683,7 +683,7 @@ md:px-8
 
 <Link
 
-href="/books"
+href="/product_search"
 
 className="
 mt-6
