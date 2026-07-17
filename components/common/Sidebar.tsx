@@ -217,6 +217,25 @@ export default function Sidebar() {
               </ul>
             </nav>
 
+            {/* サービス利用と注意点 */}
+            <div className="mx-4 mb-4 rounded-xl bg-white/10 p-4 text-sm">
+              <h3 className="flex mb-3 border-b border-white/20 pb-2 text-base font-bold items-center justify-center">
+                <AiFillAlert /> サービス利用と注意点
+              </h3>
+
+              <ul className="space-y-2 text-xs leading-5 text-teal-50">
+                <li>• 本サービスは、本店舗限定のサービスです。</li>
+                <li>• サンプルはお一人様1商品1回分です。</li>
+                <li>• 一度にお申込みいただける数量は5包までです。</li>
+                <li>• 商品や在庫状況により、ご希望のサンプルをご用意できない場合があります。</li>
+                <li>• サンプルのお届けには日数がかかる場合があります。</li>
+                <li>• サンプルの転売・譲渡・商用利用はご遠慮ください。</li>
+                <li>• パッケージや仕様は販売商品と異なる場合があります。</li>
+                <li>• 使用中・使用後に異常を感じた場合は直ちに使用を中止してください。</li>
+                <li>• 乳幼児の手の届かない場所で保管してください。</li>
+              </ul>
+            </div>
+
             {/* ログアウト */}
             <div className="
               flex
