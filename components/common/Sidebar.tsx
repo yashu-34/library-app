@@ -218,7 +218,18 @@ export default function Sidebar() {
             </nav>
 
             {/* サービス利用と注意点 */}
-            <div className="mx-4 mb-4 rounded-xl bg-white/10 p-4 text-sm">
+            <div className="
+            mx-4
+            mb-4
+            rounded-xl
+            bg-white/10
+            p-4
+            text-sm
+            max-h-56
+            overflow-y-auto
+            lg:max-h-none
+            lg:overflow-visible
+            ">
               <h3 className="flex mb-3 border-b border-white/20 pb-2 text-base font-bold items-center justify-center">
                 <AiFillAlert /> サービス利用と注意点
               </h3>
