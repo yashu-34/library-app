@@ -110,8 +110,9 @@ useState("");
 const [dialogOpen, setDialogOpen] = useState(false);
 const [dialogTitle, setDialogTitle] = useState("");
 const [dialogMessage, setDialogMessage] = useState("");
-
-
+const [dialogType, setDialogType] = useState<
+  "success" | "error" | "warning"
+>("success");
 
 
 const {
@@ -324,7 +325,12 @@ item.status==="borrowed"
 ).length;
 
 
-const showDialog = (title: string, message: string) => {
+const showDialog = (
+  type: "success" | "error" | "warning",
+  title: string,
+  message: string
+) => {
+  setDialogType(type);
   setDialogTitle(title);
   setDialogMessage(message);
   setDialogOpen(true);
@@ -335,6 +341,7 @@ const handleAddCart = async (book: Book) => {
   // 最大5商品まで
   if (cart.length >= 5) {
     showDialog(
+      "warning",
       "申込み上限",
       "一度にお申込みいただける数量は5包までです。"
     );
@@ -348,6 +355,7 @@ const handleAddCart = async (book: Book) => {
 
   if (alreadyInCart) {
     showDialog(
+      "error",
       "追加できません",
       "このサンプルはお一人様1商品1回までです。"
     );
@@ -357,6 +365,7 @@ const handleAddCart = async (book: Book) => {
   // 在庫チェック
   if (book.stock <= 0) {
     showDialog(
+      "error",
       "在庫切れ",
       "この商品は在庫切れです。"
     );
@@ -377,6 +386,7 @@ const handleAddCart = async (book: Book) => {
   setTimeout(() => setMessage(""), 3000);
 
   showDialog(
+    "success",
     "追加完了",
     `${book.title}をカートへ追加しました`
   );
@@ -958,8 +968,20 @@ message &&
       <div className="w-[90%] max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
 
         <div className="mb-4 flex justify-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-teal-100">
-            ✅
+          <div
+            className={`mt-6 w-full rounded-xl py-3 font-bold text-white transition ${
+              dialogType === "success"
+                ? "bg-green-600 hover:bg-green-700"
+                : dialogType === "error"
+                ? "bg-red-600 hover:bg-red-700"
+                : "bg-yellow-500 hover:bg-yellow-600"
+            }`}
+          >
+            {dialogType === "success"
+              ? "✅"
+              : dialogType === "error"
+              ? "❌"
+              : "⚠️"}
           </div>
         </div>
 
