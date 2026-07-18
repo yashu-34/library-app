@@ -478,35 +478,6 @@ return(
 
   </div>
 
-  {dialogOpen && (
-    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 backdrop-blur-sm">
-      <div className="w-[90%] max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
-
-        <div className="mb-4 flex justify-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-teal-100">
-            ✅
-          </div>
-        </div>
-
-        <h2 className="text-center text-xl font-bold text-gray-800">
-          {dialogTitle}
-        </h2>
-
-        <p className="mt-3 text-center text-gray-500">
-          {dialogMessage}
-        </p>
-
-        <button
-          onClick={() => setDialogOpen(false)}
-          className="mt-6 w-full rounded-xl bg-teal-600 py-3 font-bold text-white transition hover:bg-teal-700"
-        >
-          OK
-        </button>
-
-      </div>
-    </div>
-  )}
-
 </main>
 
 );
@@ -982,6 +953,34 @@ message &&
 
 </div>
 
+{dialogOpen && (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="w-[90%] max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+
+        <div className="mb-4 flex justify-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-teal-100">
+            ✅
+          </div>
+        </div>
+
+        <h2 className="text-center text-xl font-bold text-gray-800">
+          {dialogTitle}
+        </h2>
+
+        <p className="mt-3 text-center text-gray-500">
+          {dialogMessage}
+        </p>
+
+        <button
+          onClick={() => setDialogOpen(false)}
+          className="mt-6 w-full rounded-xl bg-teal-600 py-3 font-bold text-white transition hover:bg-teal-700"
+        >
+          OK
+        </button>
+
+      </div>
+    </div>
+  )}
 
 </main>
 
