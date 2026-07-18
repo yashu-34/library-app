@@ -9,6 +9,7 @@ import {
   getDocs,
   query,
   where,
+  Timestamp,
 } from "firebase/firestore";
 
 import {
@@ -23,10 +24,9 @@ import {
 import { useRouter } from "next/navigation";
 
 import Sidebar from "@/components/common/Sidebar";
+import Header from "@/components/common/Header";
 
 import {
-  FaBoxOpen,
-  FaShoppingCart,
   FaSearch,
   FaFolderOpen,
 } from "react-icons/fa";
@@ -53,6 +53,8 @@ interface Book {
   stock:number;
 
   imageUrl:string;
+
+  updatedAt?:Timestamp;
 
 }
 
@@ -118,19 +120,11 @@ useCart();
 
 const [selectedCategory, setSelectedCategory] = useState("");
 
+const [currentPage, setCurrentPage] = useState(1);
+
+const itemsPerPage = 10;
 
 const categories = [...new Set(books.map(book => book.category))];
-
-
-const categoryIcons: Record<string, string> = {
-  "極くすり湯": "📚",
-  "伝統薬湯": "📰",
-  "素材良湯": "💻",
-  "ビューティーバス": "👨‍💻",
-  "アロマティックバス": "🏯",
-  "シーズンバス": "⚽",
-  "企画商品　７種類": "🍳",
-};
 
 const router = useRouter();
 
@@ -148,6 +142,14 @@ fetchUserRentals();
 
 
 },[]);
+
+
+// 検索・カテゴリが変わったら1ページ目に戻す
+useEffect(()=>{
+
+setCurrentPage(1);
+
+},[keyword, selectedCategory]);
 
 
 
@@ -322,98 +324,42 @@ item.status==="borrowed"
 
 
 const handleAddCart = async (book: Book) => {
+  // 最大5商品まで
+  if (cart.length >= 5) {
+    alert("一度にお申込みいただける数量は5包までです。");
+    return;
+  }
 
-
-  // 同じ商品のカート数
-  const sameBookCount = cart.filter(
+  // 同じ商品は1回まで
+  const alreadyInCart = cart.some(
     (item) => item.bookId === book.id
-  ).length;
+  );
 
-
-  // 同じ商品5個まで
-  if(sameBookCount >= 5){
-
-
-    setMessage(
-      "同じ商品は5個までです"
-    );
-    
-
-
-    setTimeout(
-      ()=>setMessage(""),
-      3000
-    );
-
-
+  if (alreadyInCart) {
+    alert("このサンプルはお一人様1商品1回までです。");
     return;
-
   }
 
-
-
-
-
-
-  // 在庫確認
-
-  if(sameBookCount >= book.stock){
-
-
-    setMessage(
-      "在庫以上は追加できません"
-    );
-
-
-    setTimeout(
-      ()=>setMessage(""),
-      3000
-    );
-
-
+  // 在庫チェック
+  if (book.stock <= 0) {
+    alert("この商品は在庫切れです。");
     return;
-
   }
-
-
-
-
-
 
   await addCart({
-
     id: crypto.randomUUID(),
-
     bookId: book.id,
-
     title: book.title,
-
     author: book.author,
-
     imageUrl: book.imageUrl,
-
     stock: book.stock,
-
   });
 
+  setMessage(`${book.title}をカートへ追加しました`);
 
+  setTimeout(() => setMessage(""), 3000);
 
-
-  setMessage(
-    `${book.title}をカートへ追加しました`
-  );
-
-  alert(
-  `${book.title}をカートへ追加しました`
-);
-
-
-  setTimeout(
-    ()=>setMessage(""),
-    3000
-  );
-
-
+  alert(`${book.title}をカートへ追加しました`);
 };
 
 
@@ -424,6 +370,25 @@ const getCartCount = (bookId:string)=>{
     (item)=>
       item.bookId === bookId
   ).length;
+
+};
+
+
+// 販売日（updatedAt）が今月かどうか（NEW表示判定）
+const isNewThisMonth = (updatedAt?: Timestamp) => {
+
+  if(!updatedAt){
+    return false;
+  }
+
+  const date = updatedAt.toDate();
+
+  const now = new Date();
+
+  return (
+    date.getFullYear() === now.getFullYear() &&
+    date.getMonth() === now.getMonth()
+  );
 
 };
 
@@ -441,6 +406,30 @@ const filteredBooks = books.filter((book) => {
 });
 
 
+// ページネーション
+const totalPages = Math.max(
+  1,
+  Math.ceil(filteredBooks.length / itemsPerPage)
+);
+
+const paginatedBooks = filteredBooks.slice(
+  (currentPage - 1) * itemsPerPage,
+  currentPage * itemsPerPage
+);
+
+const handlePageChange = (page: number) => {
+
+  if(page < 1 || page > totalPages){
+    return;
+  }
+
+  setCurrentPage(page);
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+};
+
+
 
 
 if(loading){
@@ -448,20 +437,20 @@ if(loading){
 
 return(
 
-<main className="flex min-h-screen items-center justify-center bg-gray-100 lg:ml-72">
+<main className="flex min-h-screen items-center justify-center bg-white lg:ml-72">
 
-  <div className="rounded-2xl bg-white p-10 shadow-lg">
+  <div className="rounded-2xl border border-gray-100 bg-white p-10 shadow-sm">
 
     <div className="flex flex-col items-center">
 
       {/* ローディングスピナー */}
-      <div className="h-14 w-14 animate-spin rounded-full border-4 border-gray-300 border-t-green-600"></div>
+      <div className="h-12 w-12 animate-spin rounded-full border-[3px] border-gray-200 border-t-teal-600"></div>
 
-      <h2 className="mt-6 text-xl font-bold text-gray-800">
+      <h2 className="mt-6 text-base font-semibold tracking-wide text-gray-800">
         商品情報を読み込み中...
       </h2>
 
-      <p className="mt-2 text-sm text-gray-500">
+      <p className="mt-2 text-xs text-gray-400">
         少々お待ちください
       </p>
 
@@ -485,132 +474,56 @@ return(
 
 return(
 
-<div className="flex min-h-screen bg-gray-100 lg:ml-72">
+<div className="flex min-h-screen bg-white lg:ml-72">
 
     <Sidebar />
 
     <main className="flex-1">
 
-        <div className="mx-auto  px-0">
+        <div className="mx-auto px-0">
 
-<header
-  className="
-    fixed
-    top-0
-    left-0
-    right-0
-    z-40
-    bg-[#7FFFD4]
-    text-gray-900
-    shadow-lg
-    border-b
-    border-[#5EDFC0]
-  "
->
-  <div className="mx-auto flex h-25 max-w-7xl items-center justify-between px-4 lg:px-8">
+{/* ===== ヘッダー ===== */}
+<Header cartCount={cart.length} />
 
-    {/* 左側 */}
-    <div className="flex items-center gap-3">
-
-      {/* Sidebar.tsx のハンバーガーボタンと重ならないようにスマホだけ余白 */}
-      <div className="pl-12 lg:pl-0 flex items-center gap-3">
-
-        <div className="flex h-12 w-12 text-2xl items-center justify-center rounded-full bg-teal-100 text-xl">
-          <FaBoxOpen className="text-3xl text-teal-500" />
-        </div>
-
-        <div>
-          <h1 className="text-lg font-bold sm:text-2xl">
-            サンプル取り寄せ
-          </h1>
-
-          <p className="hidden text-xs text-[#3f3c10] sm:block">
-            商品の検索・取り寄せ・在庫確認ができます。
-          </p>
-        </div>
-
-      </div>
-
-    </div>
-
-    {/* 右側 */}
-    <Link
-      href="/cart"
-      className="
-        flex
-        items-center
-        gap-2
-        rounded-xl
-        bg-teal-600
-        px-4
-        py-2
-        font-bold
-        transition
-        hover:bg-teal-700
-      "
-    >
-      <HiOutlineShoppingCart className="text-xl text-white"/>
-
-      <span className="rounded-full bg-white px-2 py-1 text-green-700">
-        {cart.length}
-      </span>
-    </Link>
-
-  </div>
-</header>
-
+{/* ===== 通知メッセージ ===== */}
 {
 message &&
 
+<div className="mt-20 border-b border-teal-100 bg-teal-50 px-6 py-3 text-sm font-medium text-teal-800">
 
-<div className="
-mb-5
-rounded-lg
-bg-teal-500
-p-4
-font-bold
-text-white
-">
-
-✅ {message}
+✓ {message}
 
 </div>
-
 
 }
 
 
-
-
-
-
-
-
-
-{/* 検索 */}
-<div className="mt-24 bg-white p-6 shadow-lg">
+{/* ===== 検索 ===== */}
+<div className={`${message ? "" : "mt-20"} border-b border-gray-100 bg-white px-6 py-8`}>
 
   <div className="mb-5 flex items-center gap-3">
 
-    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-100 text-2xl">
-      <FaSearch className="text-2xl text-teal-500"/>
+    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#7FFFD4]/40">
+      <FaSearch className="text-sm text-teal-700"/>
     </div>
 
     <div>
 
-      <h2 className="text-xl font-bold text-gray-900">
-        商品検索
-      </h2>
-
-      <p className="text-sm text-gray-500">
-        商品名または販売名で検索できます
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-teal-700">
+        Search
       </p>
+
+      <h2 className="text-lg font-bold text-gray-900">
+        商品を検索する
+      </h2>
 
     </div>
 
   </div>
 
-  <div className="relative">
+  <div className="relative max-w-xl">
+
+    <FaSearch className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-sm text-gray-400" />
 
     <input
       type="text"
@@ -619,19 +532,20 @@ text-white
       onChange={(e) => setKeyword(e.target.value)}
       className="
         w-full
-        rounded-xl
+        rounded-full
         border
-        border-gray-300
-        bg-gray-50
-        py-4
-        pl-12
+        border-gray-200
+        bg-white
+        py-3
+        pl-11
         pr-4
+        text-sm
         text-gray-900
         outline-none
         transition
+        placeholder:text-gray-400
         focus:border-teal-500
-        focus:bg-white
-        focus:ring-4
+        focus:ring-2
         focus:ring-teal-100
       "
     />
@@ -641,38 +555,38 @@ text-white
 </div>
 
 
-{/* カテゴリ */}
-<div className="mb-10 bg-white p-6 shadow-lg">
+{/* ===== カテゴリ ===== */}
+<div className="border-b border-gray-100 bg-white px-6 py-8">
 
-  <div className="mb-6 flex items-center gap-3">
+  <div className="mb-5 flex items-center gap-3">
 
-    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-teal-100">
-      <FaFolderOpen className="text-2xl text-teal-500" />
+    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#7FFFD4]/40">
+      <FaFolderOpen className="text-sm text-teal-700" />
     </div>
 
     <div>
 
-      <h2 className="text-xl font-bold text-gray-900">
+      <p className="text-[11px] font-semibold uppercase tracking-widest text-teal-700">
+        Category
+      </p>
+
+      <h2 className="text-lg font-bold text-gray-900">
         カテゴリから探す
       </h2>
-
-      <p className="text-sm text-gray-500">
-        カテゴリを選択して商品を絞り込みできます
-      </p>
 
     </div>
 
   </div>
 
-  <div className="flex flex-wrap gap-3">
+  <div className="flex flex-wrap gap-2">
 
     {/* すべて */}
     <button
       onClick={() => setSelectedCategory("")}
-      className={`rounded-full px-6 py-3 text-sm font-semibold transition-all duration-300 ${
+      className={`rounded-full border px-5 py-2 text-sm font-medium transition-colors duration-200 ${
         selectedCategory === ""
-          ? "bg-teal-500 text-white shadow-md"
-          : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+          ? "border-[#7FFFD4] bg-[#7FFFD4] text-gray-900"
+          : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
       }`}
     >
       すべて
@@ -683,10 +597,10 @@ text-white
       <button
         key={category}
         onClick={() => setSelectedCategory(category)}
-        className={`rounded-full px-6 py-3 text-sm font-semibold transition-all duration-300 ${
+        className={`rounded-full border px-5 py-2 text-sm font-medium transition-colors duration-200 ${
           selectedCategory === category
-            ? "bg-teal-500 text-white shadow-md"
-            : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+            ? "border-[#7FFFD4] bg-[#7FFFD4] text-gray-900"
+            : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
         }`}
       >
         {category}
@@ -698,199 +612,317 @@ text-white
 </div>
 
 
-<div
-  className="
-    grid
-    justify-center
-    grid-cols-2
-    gap-4
-    px-4
-    sm:grid-cols-2
-    md:grid-cols-3
-    lg:grid-cols-4
-    xl:grid-cols-5
-    2xl:grid-cols-6
-  "
->
+{/* ===== 商品一覧 ===== */}
+<div className="bg-white px-6 py-8">
+
+  <p className="mb-5 text-sm text-gray-500">
+    {filteredBooks.length}件の商品
+    {
+      totalPages > 1 &&
+      `（${(currentPage - 1) * itemsPerPage + 1}〜${Math.min(currentPage * itemsPerPage, filteredBooks.length)}件を表示）`
+    }
+  </p>
+
+  <div
+    className="
+      grid
+      grid-cols-2
+      gap-x-4
+      gap-y-8
+      sm:grid-cols-2
+      md:grid-cols-3
+      lg:grid-cols-4
+      xl:grid-cols-5
+    "
+  >
 
 
-{
+  {
 
-filteredBooks.map((book)=>(
+  paginatedBooks.map((book)=>(
 
 
 
-<div
-  key={book.id}
-  className="flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
->
-  {/* 商品画像 */}
-  <div className="relative flex h-50 items-center justify-center overflow-hidden bg-gray-50 p-4">
+  <div
+    key={book.id}
+    className="group flex h-full flex-col overflow-hidden rounded-lg border border-gray-100 bg-white transition-colors duration-200 hover:border-teal-200"
+  >
+    {/* 商品画像 */}
+    <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-gray-50">
 
-    {/* カテゴリ */}
-    <span
-      className="
-        absolute
-        left-3
-        top-3
-        rounded-full
-        bg-amber-600
-        px-3
-        py-1
-        text-xs
-        font-bold
-        text-white
-        shadow
-      "
-    >
-      {book.category}
-    </span>
+      {/* カテゴリ */}
+      <span
+        className="
+          absolute
+          left-3
+          top-3
+          rounded-full
+          bg-white
+          px-3
+          py-1
+          text-[11px]
+          font-semibold
+          text-teal-700
+          shadow-sm
+        "
+      >
+        {book.category}
+      </span>
 
-    <Image
-      src={book.imageUrl || "/images/no-image.png"}
-      alt={book.title}
-      width={220}
-      height={220}
-      className="h-44 w-44 object-contain"
-    />
+      {/* NEW */}
+      {
+        isNewThisMonth(book.updatedAt) &&
+
+        <span
+          className="
+            absolute
+            right-3
+            top-3
+            rounded-full
+            bg-red-500
+            px-3
+            py-1
+            text-[11px]
+            font-semibold
+            text-white
+            shadow-sm
+          "
+        >
+          NEW
+        </span>
+      }
+
+      <Image
+        src={book.imageUrl || "/images/no-image.png"}
+        alt={book.title}
+        width={220}
+        height={220}
+        className="h-40 w-40 object-contain transition-transform duration-300 group-hover:scale-105"
+      />
+
+    </div>
+
+    {/* 商品情報 */}
+    <div className="flex flex-1 flex-col p-4">
+
+      {/* 商品名 */}
+      <h2 className="h-12 line-clamp-2 text-sm font-bold leading-snug text-gray-900">
+        {book.title}
+      </h2>
+
+      {/* 販売名 */}
+      <div className="mt-2 h-10">
+        <p className="text-[11px] text-gray-400">
+          販売名
+        </p>
+
+        <p className="mt-0.5 line-clamp-1 text-xs font-medium text-gray-600">
+          {book.author}
+        </p>
+      </div>
+
+      {/* 在庫 */}
+      <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
+
+        <span className="text-xs text-gray-400">
+          在庫状況
+        </span>
+
+
+        {
+          (() => {
+
+            // カートに入っている数
+            const cartCount = cart.filter(
+              (item) =>
+                item.bookId === book.id
+            ).length;
+
+
+            // 実際に表示する残り在庫
+            const remainingStock =
+              book.stock - cartCount;
+
+
+
+            return (
+
+              <span
+                className={`text-xs font-bold ${
+                  remainingStock > 0
+                    ? "text-teal-700"
+                    : "text-red-500"
+                }`}
+              >
+
+                {
+                  remainingStock > 0
+                    ? `残り ${remainingStock}個`
+                    : "在庫なし"
+                }
+
+              </span>
+
+            );
+
+
+          })()
+        }
+
+
+      </div>
+
+      {/* ボタン */}
+      <div className="mt-auto space-y-2 pt-4">
+
+        <Link
+          href={`/product_search/${book.id}`}
+          className="flex items-center justify-center gap-1.5 rounded-full border border-teal-700 py-2.5 text-xs font-semibold text-teal-700 transition hover:bg-teal-50"
+        >
+          <span>詳細を見る</span>
+
+          <FaArrowRight className="text-[10px]"/>
+        </Link>
+
+
+        <button
+          disabled={
+            book.stock -
+            cart.filter(
+              (item) => item.bookId === book.id
+            ).length
+            <= 0
+          }
+          onClick={() => handleAddCart(book)}
+          className="
+            w-full
+            rounded-full
+            bg-teal-700
+            py-2.5
+            text-xs
+            font-semibold
+            text-white
+            transition
+            hover:bg-teal-800
+            disabled:bg-gray-200
+            disabled:text-gray-400
+          "
+        >
+          {
+            book.stock -
+            cart.filter(
+              (item) => item.bookId === book.id
+            ).length > 0 ? (
+
+              <div className="flex items-center justify-center gap-1.5">
+                <HiOutlineShoppingCart className="text-sm" />
+                <span>カートへ追加</span>
+              </div>
+
+            ) : (
+
+              <span>在庫なし</span>
+
+            )
+          }
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
+
+  ))
+
+  }
 
   </div>
 
-  {/* 商品情報 */}
-  <div className="flex flex-1 flex-col p-5">
+  {/* ===== ページネーション ===== */}
+  {
+    totalPages > 1 &&
 
-    {/* 商品名 */}
-    <h2 className="h-14 line-clamp-2 text-lg font-bold text-gray-900">
-      {book.title}
-    </h2>
-
-    {/* 販売名 */}
-    <div className="mt-2 h-12">
-      <p className="text-xs text-gray-500">
-        販売名
-      </p>
-
-      <p className="mt-1 font-medium text-gray-800">
-        {book.author}
-      </p>
-    </div>
-
-    {/* 在庫 */}
-    <div className="mt-4 flex items-center justify-between">
-
-      <span className="text-sm text-gray-500">
-        在庫状況
-      </span>
-
-
-      {
-        (() => {
-
-          // カートに入っている数
-          const cartCount = cart.filter(
-            (item) =>
-              item.bookId === book.id
-          ).length;
-
-
-          // 実際に表示する残り在庫
-          const remainingStock =
-            book.stock - cartCount;
-
-
-
-          return (
-
-            <span
-              className={`rounded-full px-3 py-1 text-sm font-bold ${
-                remainingStock > 0
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-600"
-              }`}
-            >
-
-              {
-                remainingStock > 0
-                  ? `残り ${remainingStock}個`
-                  : "在庫なし"
-              }
-
-            </span>
-
-          );
-
-
-        })()
-      }
-
-
-    </div>
-
-    {/* ボタン */}
-    <div className="space-y-3 pt-6">
-
-      <Link
-        href={`/product_search/${book.id}`}
-        className="flex items-center justify-center gap-2 rounded-xl bg-teal-500 py-3 font-semibold text-white trantion hover:bg-teal-700"
-      >
-        <span>詳細を見る</span>
-        
-        <FaArrowRight className="text-sm"/>
-      </Link>
-
+    <div className="mt-10 flex items-center justify-center gap-2">
 
       <button
-        disabled={
-          book.stock -
-          cart.filter(
-            (item) => item.bookId === book.id
-          ).length
-          <= 0
-        }
-        onClick={() => handleAddCart(book)}
+        onClick={() => handlePageChange(currentPage - 1)}
+        disabled={currentPage === 1}
         className="
-          w-full
-          rounded-xl
-          bg-green-600
-          py-3
-          font-semibold
-          text-white
+          rounded-full
+          border
+          border-gray-200
+          px-4
+          py-2
+          text-sm
+          font-medium
+          text-gray-600
           transition
-          hover:bg-green-700
-          disabled:bg-gray-300
+          hover:bg-gray-50
+          disabled:cursor-not-allowed
+          disabled:opacity-40
         "
       >
+        前へ
+      </button>
+
+      <div className="flex items-center gap-1">
+
         {
-          book.stock -
-          cart.filter(
-            (item) => item.bookId === book.id
-          ).length > 0 ? (
+          Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
 
-            <div className="flex items-center justify-center gap-2">
-              <HiOutlineShoppingCart className="text-xl" />
-              <span>カートへ追加</span>
-            </div>
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              className={`
+                flex
+                h-9
+                w-9
+                items-center
+                justify-center
+                rounded-full
+                text-sm
+                font-semibold
+                transition-colors
+                duration-200
+                ${
+                  currentPage === page
+                    ? "bg-[#7FFFD4] text-gray-900"
+                    : "text-gray-500 hover:bg-gray-100"
+                }
+              `}
+            >
+              {page}
+            </button>
 
-          ) : (
-
-            <span>在庫なし</span>
-
-          )
+          ))
         }
+
+      </div>
+
+      <button
+        onClick={() => handlePageChange(currentPage + 1)}
+        disabled={currentPage === totalPages}
+        className="
+          rounded-full
+          border
+          border-gray-200
+          px-4
+          py-2
+          text-sm
+          font-medium
+          text-gray-600
+          transition
+          hover:bg-gray-50
+          disabled:cursor-not-allowed
+          disabled:opacity-40
+        "
+      >
+        次へ
       </button>
 
     </div>
-
-  </div>
-</div>
-
-
-))
-
-
-}
-
-
+  }
 
 </div>
 

@@ -63,16 +63,16 @@ export default function Sidebar() {
       <div className="fixed left-3 top-6 z-50 lg:hidden">
         <button
           onClick={() => setMenuOpen(true)}
-          className="rounded-xl bg-teal-600 p-3 text-white shadow-lg transition hover:bg-teal-700"
+          className="rounded-full bg-teal-700 p-3 text-white shadow-sm transition hover:bg-teal-800"
         >
           <HiOutlineBars3 size={24} />
         </button>
       </div>
 
       {/* PCサイドバー */}
-      <aside className="hidden fixed left-0 top-24 z-40 h-screen w-72 flex-col bg-gradient-to-b from-teal-500 via-teal-600 to-cyan-700 text-white shadow-xl lg:flex">
+      <aside className="hidden fixed left-0 top-20 z-40 h-[calc(100vh-5rem)] w-72 flex-col bg-[#20B2AA] text-gray-900 border-r border-[#5EDFC0] lg:flex">
         {/* メニュー */}
-        <nav className="flex-1 p-4">
+        <nav className="flex-1 p-4 text-[#505050]">
           <ul className="space-y-2">
             {menus.map((menu) => (
               <li key={menu.href}>
@@ -85,13 +85,15 @@ export default function Sidebar() {
                     rounded-xl
                     px-4
                     py-3
+                    text-sm
+                    font-semibold
                     transition-all
                     duration-300
 
                     ${
                       pathname === menu.href
-                        ? "bg-white text-teal-700 font-bold shadow"
-                        : "hover:bg-white/20"
+                        ? "bg-white text-teal-700 shadow-sm"
+                        : "text-gray-800 hover:bg-white/40"
                     }
                   `}
                 >
@@ -104,12 +106,12 @@ export default function Sidebar() {
         </nav>
 
         {/* サービス利用と注意点 */}
-        <div className="mx-4 mb-4 rounded-xl bg-white/10 p-4 text-sm">
-          <h3 className="flex mb-3 border-b border-white/20 pb-2 text-base font-bold items-center justify-center">
-            <AiFillAlert /> サービス利用と注意点
+        <div className="mx-4 mb-4 rounded-xl bg-white/50 p-4 text-sm">
+          <h3 className="flex mb-3 items-center justify-center gap-1 border-b border-white/60 pb-2 text-sm font-bold text-[#505050]">
+            <AiFillAlert className="text-teal-700" /> サービス利用と注意点
           </h3>
 
-          <ul className="space-y-2 text-xs leading-5 text-teal-50">
+          <ul className="space-y-2 text-xs leading-5 text-gray-700">
             <li>• 本サービスは、本店舗限定のサービスです。</li>
             <li>• サンプルはお一人様1商品1回分です。</li>
             <li>• 一度にお申込みいただける数量は5包までです。</li>
@@ -123,12 +125,7 @@ export default function Sidebar() {
         </div>
 
         {/* ログアウト */}
-        <div className="
-          flex
-          h-full
-          w-72
-          flex-col
-          text-white">
+        <div className="flex h-full w-72 flex-col pb-6">
           <button
             onClick={handleLogout}
             className="
@@ -138,17 +135,18 @@ export default function Sidebar() {
               items-center
               justify-center
               gap-2
-              rounded-lg
-              bg-red-500
+              rounded-full
+              bg-white
               px-3
-              py-2
+              py-2.5
               text-sm
               font-semibold
+              text-red-500
               transition
-              hover:bg-red-600
+              hover:bg-red-50
             "
           >
-            <HiOutlineArrowLeftOnRectangle size={22} />
+            <HiOutlineArrowLeftOnRectangle size={20} />
             ログアウト
           </button>
         </div>
@@ -161,27 +159,24 @@ export default function Sidebar() {
             className="
               h-full
               w-72
-              bg-gradient-to-b
-              from-teal-500
-              via-teal-600
-              to-cyan-700
-              text-white
+              bg-[#7FFFD4]
+              text-gray-900
             "
           >
             {/* ヘッダー */}
-            <div className="flex items-center justify-between border-b border-white/20 p-5">
+            <div className="flex items-center justify-between border-b border-[#5EDFC0] p-5">
               <div>
-                <h2 className="text-2xl font-bold">
+                <h2 className="text-xl font-bold tracking-wide">
                   サンプル取り寄せ
                 </h2>
 
-                <p className="text-sm text-teal-100">
+                <p className="text-xs text-gray-700">
                   商品の検索・取り寄せ・在庫確認ができます。
                 </p>
               </div>
 
               <button onClick={() => setMenuOpen(false)}>
-                <HiOutlineXMark size={30} />
+                <HiOutlineXMark size={28} />
               </button>
             </div>
 
@@ -200,12 +195,14 @@ export default function Sidebar() {
                         rounded-xl
                         px-4
                         py-3
+                        text-sm
+                        font-semibold
                         transition-all
 
                         ${
                           pathname === menu.href
-                            ? "bg-white text-teal-700 font-bold"
-                            : "hover:bg-white/20"
+                            ? "bg-white text-teal-700 shadow-sm"
+                            : "text-gray-800 hover:bg-white/40"
                         }
                       `}
                     >
@@ -222,7 +219,7 @@ export default function Sidebar() {
             mx-4
             mb-4
             rounded-xl
-            bg-white/10
+            bg-white/50
             p-4
             text-sm
             max-h-56
@@ -230,11 +227,11 @@ export default function Sidebar() {
             lg:max-h-none
             lg:overflow-visible
             ">
-              <h3 className="flex mb-3 border-b border-white/20 pb-2 text-base font-bold items-center justify-center">
-                <AiFillAlert /> サービス利用と注意点
+              <h3 className="flex mb-3 items-center justify-center gap-1 border-b border-white/60 pb-2 text-sm font-bold text-gray-900">
+                <AiFillAlert className="text-teal-700" /> サービス利用と注意点
               </h3>
 
-              <ul className="space-y-2 text-xs leading-5 text-teal-50">
+              <ul className="space-y-2 text-xs leading-5 text-gray-700">
                 <li>• 本サービスは、本店舗限定のサービスです。</li>
                 <li>• サンプルはお一人様1商品1回分です。</li>
                 <li>• 一度にお申込みいただける数量は5包までです。</li>
@@ -248,12 +245,7 @@ export default function Sidebar() {
             </div>
 
             {/* ログアウト */}
-            <div className="
-              flex
-              h-full
-              w-72
-              flex-col
-              text-white">
+            <div className="flex h-full w-72 flex-col pb-6">
               <button
                 onClick={handleLogout}
                 className="
@@ -263,14 +255,15 @@ export default function Sidebar() {
                   items-center
                   justify-center
                   gap-2
-                  rounded-lg
-                  bg-red-500
+                  rounded-full
+                  bg-white
                   px-3
-                  py-2
+                  py-2.5
                   text-sm
                   font-semibold
+                  text-red-500
                   transition
-                  hover:bg-red-600
+                  hover:bg-red-50
                   ">
                 <HiOutlineArrowLeftOnRectangle size={18} />
                 ログアウト

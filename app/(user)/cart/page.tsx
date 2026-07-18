@@ -32,6 +32,7 @@ import {
   useEffect,
   useState
 } from "react";
+import Header from "@/components/common/Header";
 
 
 
@@ -211,19 +212,23 @@ rentalQuery
 
 rentalSnapshot.size;
 
-
-// 同じ商品の個数をチェック
-const bookCountMap: Record<string, number> = {};
-
-for (const book of cart) {
-  bookCountMap[book.bookId] = (bookCountMap[book.bookId] || 0) + 1;
-
-  if (bookCountMap[book.bookId] > 5) {
-    alert(`「${book.title}」は同じ商品を5個までしか貸出できません。`);
-    return;
-  }
+// 一度に申し込めるのは5商品まで
+if (cart.length > 5) {
+  alert("一度にお申込みいただける数量は5包までです。");
+  return;
 }
 
+// 同じ商品は1商品1回まで
+const bookIds = new Set<string>();
+
+for (const book of cart) {
+  if (bookIds.has(book.bookId)) {
+    alert(`「${book.title}」はお一人様1商品1回までです。`);
+    return;
+  }
+
+  bookIds.add(book.bookId);
+}
 
 
 for(
@@ -418,54 +423,8 @@ return(
 
     <main className="flex-1">
 
-<header
-  className="
-    fixed
-    top-0
-    left-0
-    right-0
-    z-40
-    bg-gradient-to-r
-    from-amber-700
-    via-yellow-600
-    to-amber-800
-    text-white
-    shadow-lg
-  "
->
-  <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-4 lg:px-8">
-
-    {/* 左側 */}
-    <div className="pl-12 lg:pl-0">
-
-      <h1 className="text-2xl font-bold">
-        🛒 貸出カート
-      </h1>
-
-      <p className="text-sm text-yellow-100">
-        貸出する商品を確認してください
-      </p>
-
-    </div>
-
-    {/* 商品一覧へ戻る */}
-    <Link
-      href="/books"
-      className="
-        rounded-xl
-        bg-blue-600
-        px-5
-        py-3
-        font-bold
-        transition
-        hover:bg-blue-700
-      "
-    >
-      📚 商品一覧
-    </Link>
-
-  </div>
-</header>
+{/* ===== ヘッダー ===== */}
+<Header cartCount={cart.length} />
 
 
 <div className="mx-auto mt-28 max-w-5xl p-6">

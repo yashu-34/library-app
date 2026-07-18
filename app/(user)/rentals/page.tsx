@@ -16,6 +16,8 @@ import {
 
 import { db } from "@/firebase/config";
 
+import Header from "@/components/common/Header";
+import { useCart } from "@/components/user/CartProvider";
 
 
 interface Rental {
@@ -63,7 +65,11 @@ useState<
 "borrowed"|"returned"
 >("borrowed");
 
-
+const {
+ cart,
+}
+=
+useCart();
 
 
 
@@ -363,44 +369,7 @@ return(
     <main className="flex-1">
 
 
-<header
-  className="
-    fixed
-    top-0
-    left-0
-    right-0
-    z-40
-    bg-gradient-to-r
-    from-amber-700
-    via-yellow-600
-    to-amber-800
-    text-white
-    shadow-lg
-  "
->
-  <div className="mx-auto flex h-24 max-w-7xl items-center justify-between px-4 lg:px-8">
-
-    <div className="pl-12 lg:pl-0">
-
-      <h1 className="text-2xl font-bold">
-        📖 貸出履歴
-      </h1>
-
-      <p className="text-sm text-yellow-100">
-        貸出中・返却済みの商品を確認できます
-      </p>
-
-    </div>
-
-    <Link
-      href="/product_search"
-      className="rounded-xl bg-blue-600 px-5 py-3 font-bold hover:bg-blue-700"
-    >
-      📚 商品一覧
-    </Link>
-
-  </div>
-</header>
+<Header cartCount={cart.length} />
 
 
 
