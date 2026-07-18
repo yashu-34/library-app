@@ -29,6 +29,9 @@ import Header from "@/components/common/Header";
 import {
   FaSearch,
   FaFolderOpen,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaExclamationTriangle,
 } from "react-icons/fa";
 
 import { FaArrowRight } from "react-icons/fa";
@@ -967,21 +970,27 @@ message &&
     <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="w-[90%] max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
 
-        <div className="mb-4 flex justify-center">
+        <div className="mb-5 flex justify-center">
           <div
-            className={`mt-6 w-full rounded-xl py-3 font-bold text-white transition ${
+            className={`flex h-20 w-20 items-center justify-center rounded-full ${
               dialogType === "success"
-                ? "bg-white"
+                ? "bg-white-100"
                 : dialogType === "error"
-                ? "bg-white"
-                : "bg-white"
+                ? "bg-white-100"
+                : "bg-white-100"
             }`}
           >
-            {dialogType === "success"
-              ? "✅"
-              : dialogType === "error"
-              ? "❌"
-              : "⚠️"}
+            {dialogType === "success" && (
+              <FaCheckCircle className="text-5xl text-green-600" />
+            )}
+
+            {dialogType === "error" && (
+              <FaTimesCircle className="text-5xl text-red-600" />
+            )}
+
+            {dialogType === "warning" && (
+              <FaExclamationTriangle className="text-5xl text-yellow-500" />
+            )}
           </div>
         </div>
 
