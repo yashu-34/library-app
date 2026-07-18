@@ -971,10 +971,10 @@ message &&
           <div
             className={`mt-6 w-full rounded-xl py-3 font-bold text-white transition ${
               dialogType === "success"
-                ? "bg-green-600 hover:bg-green-700"
+                ? "bg-white"
                 : dialogType === "error"
-                ? "bg-red-600 hover:bg-red-700"
-                : "bg-yellow-500 hover:bg-yellow-600"
+                ? "bg-white"
+                : "bg-white"
             }`}
           >
             {dialogType === "success"
