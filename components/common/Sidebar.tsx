@@ -8,13 +8,15 @@ import { auth } from "@/firebase/config";
 
 import {
   HiOutlineHome,
-  HiOutlineClipboardDocumentList,
   HiOutlineUser,
   HiOutlineShoppingCart,
   HiOutlineArrowLeftOnRectangle,
   HiOutlineBars3,
   HiOutlineXMark,
 } from "react-icons/hi2";
+
+import { GoHistory } from "react-icons/go";
+
 
 import { AiFillAlert } from "react-icons/ai";
 
@@ -43,7 +45,7 @@ export default function Sidebar() {
     {
       name: "履歴",
       href: "/rentals",
-      icon: <HiOutlineClipboardDocumentList size={22} />,
+      icon: <GoHistory size={22} />,
     },
     {
       name: "マイページ",
