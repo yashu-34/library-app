@@ -107,6 +107,10 @@ const [message,setMessage]
 =
 useState("");
 
+const [dialogOpen, setDialogOpen] = useState(false);
+const [dialogTitle, setDialogTitle] = useState("");
+const [dialogMessage, setDialogMessage] = useState("");
+
 
 
 
@@ -320,13 +324,20 @@ item.status==="borrowed"
 ).length;
 
 
-
+const showDialog = (title: string, message: string) => {
+  setDialogTitle(title);
+  setDialogMessage(message);
+  setDialogOpen(true);
+};
 
 
 const handleAddCart = async (book: Book) => {
   // 最大5商品まで
   if (cart.length >= 5) {
-    alert("一度にお申込みいただける数量は5包までです。");
+    showDialog(
+      "申込み上限",
+      "一度にお申込みいただける数量は5包までです。"
+    );
     return;
   }
 
@@ -336,13 +347,19 @@ const handleAddCart = async (book: Book) => {
   );
 
   if (alreadyInCart) {
-    alert("このサンプルはお一人様1商品1回までです。");
+    showDialog(
+      "追加できません",
+      "このサンプルはお一人様1商品1回までです。"
+    );
     return;
   }
 
   // 在庫チェック
   if (book.stock <= 0) {
-    alert("この商品は在庫切れです。");
+    showDialog(
+      "在庫切れ",
+      "この商品は在庫切れです。"
+    );
     return;
   }
 
@@ -359,7 +376,10 @@ const handleAddCart = async (book: Book) => {
 
   setTimeout(() => setMessage(""), 3000);
 
-  alert(`${book.title}をカートへ追加しました`);
+  showDialog(
+    "追加完了",
+    `${book.title}をカートへ追加しました`
+  );
 };
 
 
@@ -457,6 +477,35 @@ return(
     </div>
 
   </div>
+
+  {dialogOpen && (
+    <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+      <div className="w-[90%] max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+
+        <div className="mb-4 flex justify-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-teal-100">
+            ✅
+          </div>
+        </div>
+
+        <h2 className="text-center text-xl font-bold text-gray-800">
+          {dialogTitle}
+        </h2>
+
+        <p className="mt-3 text-center text-gray-500">
+          {dialogMessage}
+        </p>
+
+        <button
+          onClick={() => setDialogOpen(false)}
+          className="mt-6 w-full rounded-xl bg-teal-600 py-3 font-bold text-white transition hover:bg-teal-700"
+        >
+          OK
+        </button>
+
+      </div>
+    </div>
+  )}
 
 </main>
 
