@@ -62,12 +62,13 @@ export default function Sidebar() {
   return (
     <>
       {/* スマホ用メニューボタン */}
-      <div className="fixed left-3 top-6 z-50 lg:hidden">
+      <div className="fixed left-2 top-4 sm:left-3 sm:top-6 z-50 lg:hidden">
         <button
           onClick={() => setMenuOpen(true)}
-          className="rounded-full bg-teal-700 p-3 text-white shadow-sm transition hover:bg-teal-800"
+          className="rounded-full bg-teal-700 p-2 sm:p-3 text-white shadow-sm transition hover:bg-teal-800"
         >
-          <HiOutlineBars3 size={24} />
+          <HiOutlineBars3 size={18} className="sm:hidden" />
+          <HiOutlineBars3 size={24} className="hidden sm:block" />
         </button>
       </div>
 
