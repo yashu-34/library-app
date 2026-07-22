@@ -214,7 +214,7 @@ export default function BookDetailPage() {
                   <div className="flex items-start gap-3">
                     <FiUser className="mt-0.5 h-4 w-4 shrink-0 text-[#B8874A]" />
                     <div>
-                      <dt className="text-xs text-[#1E2A3A]/45">販売名</dt>
+                      <dt className="text-xs text-[#1E2A3A]/45">香り</dt>
                       <dd className="font-medium text-[#1E2A3A]">
                         {book.author}
                       </dd>
