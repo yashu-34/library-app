@@ -12,6 +12,9 @@ import {
   updateDoc,
   doc,
   getDoc,
+  getDocs,
+  query,
+  where,
   serverTimestamp,
 } from "firebase/firestore";
 
@@ -138,6 +141,19 @@ export default function CartPage() {
       let successCount = 0;
 
       for (const book of cart) {
+        // 過去に取り寄せ済みか確認
+        const rentalQuery = query(
+          collection(db, "rentals"),
+          where("userId", "==", user.uid),
+          where("bookId", "==", book.bookId)
+        );
+
+        const rentalSnapshot = await getDocs(rentalQuery);
+
+        if (!rentalSnapshot.empty) {
+          alert(`「${book.title}」は既に取り寄せ済みのため、再度取り寄せできません。`);
+          continue;
+        }
         const bookRef = doc(db, "books", book.bookId);
         const bookSnap = await getDoc(bookRef);
 

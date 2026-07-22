@@ -73,7 +73,21 @@ export default function Sidebar() {
       </div>
 
       {/* PCサイドバー */}
-      <aside className="hidden fixed left-0 top-20 z-40 h-[calc(100vh-5rem)] w-72 flex-col bg-[#20B2AA] text-gray-900 border-r border-[#5EDFC0] lg:flex">
+      <aside className="
+        hidden
+        fixed
+        left-0
+        top-20
+        z-40
+        h-[calc(100vh-5rem)]
+        w-72
+        flex-col
+        overflow-y-auto
+        overflow-x-hidden
+        bg-[#AFEEEE]
+        text-gray-900
+        lg:flex
+      ">
         {/* メニュー */}
         <nav className="flex-1 p-4 text-[#505050]">
           <ul className="space-y-2">
@@ -114,16 +128,21 @@ export default function Sidebar() {
             <AiFillAlert className="text-teal-700" /> サービス利用と注意点
           </h3>
 
-          <ul className="space-y-2 text-xs leading-5 text-gray-700">
-            <li>• 本サービスは、本店舗限定のサービスです。</li>
+          <ul className="space-y-2 text-[11px] leading-5 text-gray-700">
+            <li className="whitespace-nowrap">
+              • 本サービスは、本店舗限定のサービスです。
+            </li>
             <li>• サンプルはお一人様1商品1回分です。</li>
-            <li>• 一度にお申込みいただける数量は5包までです。</li>
+            <li>• 一度にお申込みいただける数量は
+              <br />
+              5包までです。
+            </li>
             <li>• 商品や在庫状況により、ご希望のサンプルをご用意できない場合があります。</li>
             <li>• サンプルのお届けには日数がかかる場合があります。</li>
             <li>• サンプルの転売・譲渡・商用利用はご遠慮ください。</li>
             <li>• パッケージや仕様は販売商品と異なる場合があります。</li>
             <li>• 使用中・使用後に異常を感じた場合は直ちに使用を中止してください。</li>
-            <li>• 乳幼児の手の届かない場所で保管してください。</li>
+            <li>• 乳幼児の手の届かない場所で保管して<br/>ください。</li>
           </ul>
         </div>
 

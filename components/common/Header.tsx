@@ -25,10 +25,9 @@ export default function Header({ cartCount }: HeaderProps) {
     left-0
     right-0
     z-40
-    bg-[#7FFFD4]
+    bg-[#F0FFF0]
     text-gray-900
-    border-b
-    border-[#5EDFC0]
+
   "
 >
   <div className="mx-auto flex h-16 sm:h-20 max-w-11xl items-center justify-between px-3 sm:px-4 lg:px-8">
@@ -39,7 +38,7 @@ export default function Header({ cartCount }: HeaderProps) {
       {/* Sidebar.tsx のハンバーガーボタンと重ならないようにスマホだけ余白 */}
       <div className="pl-10 sm:pl-12 lg:pl-0 flex items-center gap-2 sm:gap-3 min-w-0">
 
-        <div className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full bg-white/70">
+        <div className="flex h-8 w-8 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-full bg-white/60">
           <FaBoxOpen className="text-sm sm:text-lg text-teal-700" />
         </div>
 

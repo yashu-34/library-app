@@ -3,9 +3,17 @@
 import Sidebar from "@/components/common/Sidebar";
 import { useEffect, useMemo, useState } from "react";
 
-import { collection, getDocs, query, orderBy, doc, getDoc } from "firebase/firestore";
+import { auth, db } from "@/firebase/config";
 
-import { db } from "@/firebase/config";
+import {
+  collection,
+  getDocs,
+  query,
+  orderBy,
+  where,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 
 import Header from "@/components/common/Header";
 import { useCart } from "@/components/user/CartProvider";
@@ -33,47 +41,61 @@ export default function MyRentalsPage() {
   }, []);
 
   const fetchRentals = async () => {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const q = query(collection(db, "rentals"), orderBy("createdAt", "desc"));
-      const snapshot = await getDocs(q);
+    const user = auth.currentUser;
 
-      const list = snapshot.docs.map((docSnap) => ({
-        id: docSnap.id,
-        ...docSnap.data(),
-      })) as Rental[];
-
-      // 商品画像を books コレクションから取得して結合(bookId の重複はまとめて取得)
-      const uniqueBookIds = Array.from(new Set(list.map((r) => r.bookId)));
-
-      const imageEntries = await Promise.all(
-        uniqueBookIds.map(async (bookId) => {
-          try {
-            const bookSnap = await getDoc(doc(db, "books", bookId));
-            // 実際のフィールド名が異なる場合はここを変更してください（例: coverUrl, thumbnail など）
-            const imageUrl = bookSnap.exists() ? bookSnap.data().imageUrl : undefined;
-            return [bookId, imageUrl] as const;
-          } catch {
-            return [bookId, undefined] as const;
-          }
-        })
-      );
-
-      const imageMap = new Map(imageEntries);
-
-      const enriched = list.map((r) => ({
-        ...r,
-        bookImage: imageMap.get(r.bookId),
-      }));
-
-      setRentals(enriched);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+    if (!user) {
+      setRentals([]);
+      return;
     }
-  };
+
+    const q = query(
+      collection(db, "rentals"),
+      where("userId", "==", user.uid),
+      orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(q);
+
+    const list = snapshot.docs.map((docSnap) => ({
+      id: docSnap.id,
+      ...docSnap.data(),
+    })) as Rental[];
+
+    // 商品画像を books コレクションから取得
+    const uniqueBookIds = Array.from(new Set(list.map((r) => r.bookId)));
+
+    const imageEntries = await Promise.all(
+      uniqueBookIds.map(async (bookId) => {
+        try {
+          const bookSnap = await getDoc(doc(db, "books", bookId));
+          const imageUrl = bookSnap.exists()
+            ? bookSnap.data().imageUrl
+            : undefined;
+
+          return [bookId, imageUrl] as const;
+        } catch {
+          return [bookId, undefined] as const;
+        }
+      })
+    );
+
+    const imageMap = new Map(imageEntries);
+
+    const enriched = list.map((r) => ({
+      ...r,
+      bookImage: imageMap.get(r.bookId),
+    }));
+
+    setRentals(enriched);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const borrowedCount = useMemo(
     () => rentals.filter((r) => r.status === "borrowed").length,

@@ -57,7 +57,7 @@ interface Book {
 
   imageUrl:string;
 
-  updatedAt?:Timestamp;
+  publishDate?:string;
 
 }
 
@@ -408,21 +408,17 @@ const getCartCount = (bookId:string)=>{
 
 
 // 販売日（updatedAt）が今月かどうか（NEW表示判定）
-const isNewThisMonth = (updatedAt?: Timestamp) => {
-
-  if(!updatedAt){
-    return false;
-  }
-
-  const date = updatedAt.toDate();
+const isNew = (publishDate?: string) => {
+  if (!publishDate) return false;
 
   const now = new Date();
+  const publish = new Date(publishDate);
 
-  return (
-    date.getFullYear() === now.getFullYear() &&
-    date.getMonth() === now.getMonth()
-  );
+  const diffTime = now.getTime() - publish.getTime();
 
+  const diffDays = diffTime / (1000 * 60 * 60 * 24);
+
+  return diffDays <= 30;
 };
 
 
@@ -618,7 +614,7 @@ message &&
       onClick={() => setSelectedCategory("")}
       className={`rounded-full border px-5 py-2 text-sm font-medium transition-colors duration-200 ${
         selectedCategory === ""
-          ? "border-[#7FFFD4] bg-[#7FFFD4] text-gray-900"
+          ? "border-[#c3ffeb] bg-[#ceffce] text-gray-900"
           : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
       }`}
     >
@@ -632,7 +628,7 @@ message &&
         onClick={() => setSelectedCategory(category)}
         className={`rounded-full border px-5 py-2 text-sm font-medium transition-colors duration-200 ${
           selectedCategory === category
-            ? "border-[#7FFFD4] bg-[#7FFFD4] text-gray-900"
+            ? "border-[#c3ffeb] bg-[#ceffce] text-gray-900"
             : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
         }`}
       >
@@ -704,7 +700,7 @@ message &&
 
       {/* NEW */}
       {
-        isNewThisMonth(book.updatedAt) &&
+        isNew(book.publishDate) &&
 
         <span
           className="
@@ -743,10 +739,10 @@ message &&
         {book.title}
       </h2>
 
-      {/* 販売名 */}
+      {/* 香り*/}
       <div className="mt-2 h-10">
         <p className="text-[11px] text-gray-400">
-          販売名
+          香り
         </p>
 
         <p className="mt-0.5 line-clamp-1 text-xs font-medium text-gray-600">
