@@ -181,7 +181,7 @@ export default function Sidebar() {
             className="
               h-full
               w-72
-              bg-[#7FFFD4]
+              bg-[#AFEEEE]
               text-gray-900
             "
           >

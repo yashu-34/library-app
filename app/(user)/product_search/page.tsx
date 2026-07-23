@@ -49,6 +49,8 @@ interface Book {
 
   author:string;
 
+  salesName?: string;
+
   publisher:string;
 
   category:string;
@@ -92,6 +94,9 @@ const [rentals,setRentals]
 =
 useState<Rental[]>([]);
 
+const [orderedBookIds, setOrderedBookIds] 
+= 
+useState<string[]>([]);
 
 
 const [keyword,setKeyword]
@@ -280,14 +285,15 @@ await getDocs(q);
 
 
 
-setRentals(
+const rentalList = snapshot.docs.map(
+  (doc) => doc.data() as Rental
+);
 
-snapshot.docs.map(doc=>
+setRentals(rentalList);
 
-doc.data() as Rental
-
-)
-
+// 一度でも取り寄せた商品ID
+setOrderedBookIds(
+  rentalList.map((rental) => rental.bookId)
 );
 
 
@@ -347,6 +353,16 @@ const handleAddCart = async (book: Book) => {
       "warning",
       "申込み上限",
       "一度にお申込みいただける数量は5包までです。"
+    );
+    return;
+  }
+
+  // 過去に取り寄せた商品は追加不可
+  if (orderedBookIds.includes(book.id)) {
+    showDialog(
+      "error",
+      "追加できません",
+      "この商品は過去に取り寄せ済みのため、再度取り寄せできません。"
     );
     return;
   }
@@ -425,7 +441,8 @@ const isNew = (publishDate?: string) => {
 const filteredBooks = books.filter((book) => {
   const matchKeyword =
     book.title.includes(keyword) ||
-    book.author.includes(keyword);
+    book.author.includes(keyword) ||
+    (book.salesName ?? "").includes(keyword);
 
   const matchCategory =
     selectedCategory === "" ||
@@ -457,7 +474,6 @@ const handlePageChange = (page: number) => {
   window.scrollTo({ top: 0, behavior: "smooth" });
 
 };
-
 
 
 
@@ -739,14 +755,18 @@ message &&
         {book.title}
       </h2>
 
-      {/* 香り*/}
+      {/* 香り・販売名 */}
       <div className="mt-2 h-10">
         <p className="text-[11px] text-gray-400">
-          香り
+          {book.category === "極くすり湯"
+            ? "販売名"
+            : "香り"}
         </p>
 
         <p className="mt-0.5 line-clamp-1 text-xs font-medium text-gray-600">
-          {book.author}
+          {book.category === "極くすり湯"
+            ? (book.salesName || "-")
+            : book.author}
         </p>
       </div>
 

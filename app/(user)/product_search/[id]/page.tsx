@@ -23,7 +23,6 @@ import { useCart } from "@/components/user/CartProvider";
 import Sidebar from "@/components/common/Sidebar";
 import Header from "@/components/common/Header";
 
-// react-icons (Feather set) — `npm install react-icons` if not already installed
 import {
   FiShoppingCart,
   FiShoppingBag,
@@ -34,12 +33,14 @@ import {
   FiCalendar,
   FiCheckCircle,
   FiXCircle,
+  FiAlertTriangle,
   FiImage,
 } from "react-icons/fi";
 
 interface Book {
   title: string;
   author: string;
+  salesName?: string; 
   publisher: string;
   isbn: string;
   category: string;
@@ -58,6 +59,13 @@ export default function BookDetailPage() {
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(true);
   const [borrowCount, setBorrowCount] = useState(0);
+  const [orderedBookIds, setOrderedBookIds] = useState<string[]>([]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState("");
+  const [dialogMessage, setDialogMessage] = useState("");
+  const [dialogType, setDialogType] = useState<
+    "success" | "error" | "warning"
+  >("success");
 
   // =======================
   // ログイン確認
@@ -80,15 +88,27 @@ export default function BookDetailPage() {
         }
       }
 
-      // 現在借りている冊数取得
       const q = query(
-        collection(db, "rentals"),
-        where("userId", "==", user.uid),
-        where("status", "==", "borrowed")
-      );
+      collection(db, "rentals"),
+      where("userId", "==", user.uid)
+    );
 
-      const snapshot = await getDocs(q);
-      setBorrowCount(snapshot.size);
+    const snapshot = await getDocs(q);
+
+    const rentalList = snapshot.docs.map((doc) => doc.data());
+
+    setBorrowCount(
+      rentalList.filter(
+        (rental: any) => rental.status === "borrowed"
+      ).length
+    );
+
+    // 一度でも取り寄せた商品ID
+    setOrderedBookIds(
+      rentalList.map(
+        (rental: any) => rental.bookId
+      )
+    );
     });
 
     return () => unsubscribe();
@@ -125,19 +145,45 @@ export default function BookDetailPage() {
   // カート込み残り在庫
   const remainingStock = book ? Math.max(book.stock - cartBookCount, 0) : 0;
 
+  const showDialog = (
+    type: "success" | "error" | "warning",
+    title: string,
+    message: string
+  ) => {
+    setDialogType(type);
+    setDialogTitle(title);
+    setDialogMessage(message);
+    setDialogOpen(true);
+  };
+
   // =======================
   // カート追加
   // =======================
   const handleAddCart = async () => {
     if (!book) return;
 
+    // 過去に取り寄せ済み
+    if (orderedBookIds.includes(id)) {
+      showDialog(
+        "error",
+        "追加できません",
+        "この商品は過去に取り寄せ済みのため、再度取り寄せできません。"
+      );
+      return;
+    }
+
+    // 在庫切れ
     if (remainingStock <= 0) {
-      alert("在庫がありません");
+      showDialog(
+        "error",
+        "在庫切れ",
+        "この商品は在庫切れです。"
+      );
       return;
     }
 
     await addCart({
-      id: "",
+      id: crypto.randomUUID(),
       bookId: id,
       title: book.title,
       author: book.author,
@@ -145,7 +191,11 @@ export default function BookDetailPage() {
       stock: book.stock,
     });
 
-    alert(`${book.title}をカートへ追加しました`);
+    showDialog(
+      "success",
+      "追加完了",
+      `${book.title}をカートへ追加しました。`
+    );
   };
 
   if (loading || !book) {
@@ -214,9 +264,14 @@ export default function BookDetailPage() {
                   <div className="flex items-start gap-3">
                     <FiUser className="mt-0.5 h-4 w-4 shrink-0 text-[#B8874A]" />
                     <div>
-                      <dt className="text-xs text-[#1E2A3A]/45">香り</dt>
+                      <dt className="text-xs text-[#1E2A3A]/45">
+                        {book.category === "極くすり湯" ? "販売名" : "香り"}
+                      </dt>
+
                       <dd className="font-medium text-[#1E2A3A]">
-                        {book.author}
+                        {book.category === "極くすり湯"
+                          ? book.salesName
+                          : book.author}
                       </dd>
                     </div>
                   </div>
@@ -263,7 +318,6 @@ export default function BookDetailPage() {
                       ? "border-[#5F7A63] text-[#5F7A63]"
                       : "border-[#A8402F] text-[#A8402F]"
                   }`}
-                  style={{ transform: "rotate(-2deg)" }}
                 >
                   {isAvailable ? (
                     <FiCheckCircle className="h-4 w-4" />
@@ -281,7 +335,13 @@ export default function BookDetailPage() {
                     className="flex w-full items-center justify-center gap-2 rounded-sm bg-[#1E2A3A] py-3 text-base font-bold text-white transition hover:bg-[#B8874A] disabled:cursor-not-allowed disabled:bg-[#1E2A3A]/30 md:text-lg"
                   >
                     <FiShoppingCart className="h-5 w-5" />
-                    {remainingStock <= 0 ? "在庫なし" : "カートへ追加"}
+                    {
+                      orderedBookIds.includes(id)
+                        ? "取り寄せ済み"
+                        : remainingStock <= 0
+                        ? "在庫なし"
+                        : "カートへ追加"
+                    }
                   </button>
 
                   <Link
@@ -296,6 +356,46 @@ export default function BookDetailPage() {
             </div>
           </div>
         </div>
+        {dialogOpen && (
+          <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/40 backdrop-blur-sm">
+            <div className="w-[90%] max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in duration-200">
+
+              <div className="mb-5 flex justify-center">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full">
+
+                  {dialogType === "success" && (
+                    <FiCheckCircle className="text-5xl text-green-600" />
+                  )}
+
+                  {dialogType === "error" && (
+                    <FiXCircle className="text-5xl text-red-600" />
+                  )}
+
+                  {dialogType === "warning" && (
+                    <FiAlertTriangle className="text-5xl text-yellow-500" />
+                  )}
+
+                </div>
+              </div>
+
+              <h2 className="text-center text-xl font-bold text-gray-800">
+                {dialogTitle}
+              </h2>
+
+              <p className="mt-3 text-center text-gray-500">
+                {dialogMessage}
+              </p>
+
+              <button
+                onClick={() => setDialogOpen(false)}
+                className="mt-6 w-full rounded-xl bg-teal-600 py-3 font-bold text-white transition hover:bg-teal-700"
+              >
+                OK
+              </button>
+
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

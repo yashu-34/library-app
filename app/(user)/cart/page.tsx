@@ -32,6 +32,11 @@ import {
   PackageOpen,
   Loader2,
   AlertTriangle,
+  CheckCircle2,
+  XCircle,
+  Info,
+  X,
+  ShieldCheck,
 } from "lucide-react";
 import { HiOutlineShoppingCart } from "react-icons/hi2";
 
@@ -39,6 +44,55 @@ const REQUEST_LIMIT = 5;
 const LOW_STOCK_THRESHOLD = 2;
 
 type StockMap = Record<string, number>;
+
+type AlertType = "success" | "error" | "warning" | "info";
+
+type AlertInfo = {
+  type: AlertType;
+  message: string;
+};
+
+const ALERT_STYLES: Record<
+  AlertType,
+  { bg: string; border: string; text: string; icon: React.ReactNode }
+> = {
+  success: {
+    bg: "bg-green-50",
+    border: "border-green-200",
+    text: "text-green-800",
+    icon: <CheckCircle2 size={20} className="text-green-600" />,
+  },
+  error: {
+    bg: "bg-red-50",
+    border: "border-red-200",
+    text: "text-red-800",
+    icon: <XCircle size={20} className="text-red-600" />,
+  },
+  warning: {
+    bg: "bg-orange-50",
+    border: "border-orange-200",
+    text: "text-orange-800",
+    icon: <AlertTriangle size={20} className="text-orange-600" />,
+  },
+  info: {
+    bg: "bg-blue-50",
+    border: "border-blue-200",
+    text: "text-blue-800",
+    icon: <Info size={20} className="text-blue-600" />,
+  },
+};
+
+const TERMS = [
+  "本サービスは、本店舗限定のサービスです。",
+  "サンプルはお一人様1商品1回分です。",
+  `一度にお申込みいただける数量は${REQUEST_LIMIT}包までです。`,
+  "商品や在庫状況により、ご希望のサンプルをご用意できない場合があります。",
+  "サンプルのお届けには日数がかかる場合があります。",
+  "サンプルの転売・譲渡・商用利用はご遠慮ください。",
+  "パッケージや仕様は販売商品と異なる場合があります。",
+  "使用中・使用後に異常を感じた場合は直ちに使用を中止してください。",
+  "乳幼児の手の届かない場所で保管してください。",
+];
 
 export default function CartPage() {
   const router = useRouter();
@@ -49,6 +103,13 @@ export default function CartPage() {
   const [submitting, setSubmitting] = useState(false);
   const [initializing, setInitializing] = useState(true);
   const [stockMap, setStockMap] = useState<StockMap>({});
+
+  // カスタムアラート
+  const [alertInfo, setAlertInfo] = useState<AlertInfo | null>(null);
+
+  // 同意モーダル
+  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -105,39 +166,64 @@ export default function CartPage() {
 
   const exceedsLimit = cart.length > REQUEST_LIMIT;
 
-  const requestBooks = async () => {
+  // アラート表示（5秒後に自動で閉じる）
+  const showAlert = (type: AlertType, message: string) => {
+    setAlertInfo({ type, message });
+  };
+
+  useEffect(() => {
+    if (!alertInfo) return;
+    const timer = setTimeout(() => setAlertInfo(null), 5000);
+    return () => clearTimeout(timer);
+  }, [alertInfo]);
+
+  // 取り寄せボタン押下時のバリデーション → 通ったら同意モーダルを開く
+  const handleRequestClick = () => {
     const user = auth.currentUser;
 
     if (!user) {
-      alert("ログインしてください");
+      showAlert("error", "ログインしてください");
       return;
     }
 
     if (cart.length === 0) {
-      alert("取り寄せる商品を選択してください");
+      showAlert("warning", "取り寄せる商品を選択してください");
       return;
     }
 
     if (exceedsLimit) {
-      alert(`一度にお申込みいただける数量は${REQUEST_LIMIT}点までです`);
+      showAlert("warning", `一度にお申込みいただける数量は${REQUEST_LIMIT}点までです`);
       return;
     }
 
     const bookIds = new Set<string>();
     for (const book of cart) {
       if (bookIds.has(book.bookId)) {
-        alert(`「${book.title}」はお一人様1商品1回までです。`);
+        showAlert("warning", `「${book.title}」はお一人様1商品1回までです。`);
         return;
       }
       bookIds.add(book.bookId);
     }
 
-    if (!confirm(`${cart.length}点の商品を取り寄せます。よろしいですか？`)) return;
+    setAgreed(false);
+    setShowConsentModal(true);
+  };
 
+  // 同意モーダルで「同意して取り寄せる」を押した後の実処理
+  const submitRequest = async () => {
+    const user = auth.currentUser;
+    if (!user) {
+      setShowConsentModal(false);
+      showAlert("error", "ログインしてください");
+      return;
+    }
+
+    setShowConsentModal(false);
     setSubmitting(true);
 
     try {
       const outOfStockTitles: string[] = [];
+      const alreadyRentedTitles: string[] = [];
       let successCount = 0;
 
       for (const book of cart) {
@@ -151,9 +237,10 @@ export default function CartPage() {
         const rentalSnapshot = await getDocs(rentalQuery);
 
         if (!rentalSnapshot.empty) {
-          alert(`「${book.title}」は既に取り寄せ済みのため、再度取り寄せできません。`);
+          alreadyRentedTitles.push(book.title);
           continue;
         }
+
         const bookRef = doc(db, "books", book.bookId);
         const bookSnap = await getDoc(bookRef);
 
@@ -183,22 +270,36 @@ export default function CartPage() {
         successCount += 1;
       }
 
-      if (successCount > 0) {
-        alert(`${userName}さんの取り寄せ手続きが完了しました（${successCount}点）`);
-      }
+      const messages: string[] = [];
 
-      if (outOfStockTitles.length > 0) {
-        alert(
-          `以下の商品は在庫切れのため取り寄せできませんでした：\n${outOfStockTitles.join("\n")}`
+      if (successCount > 0) {
+        messages.push(
+          `${userName}さんの取り寄せ手続きが完了しました（${successCount}点）`
         );
       }
 
+      if (alreadyRentedTitles.length > 0) {
+        messages.push(
+          `既に取り寄せ済みのため対象外でした：\n${alreadyRentedTitles.join("\n")}`
+        );
+      }
+
+      if (outOfStockTitles.length > 0) {
+        messages.push(
+          `在庫切れのため取り寄せできませんでした：\n${outOfStockTitles.join("\n")}`
+        );
+      }
+
+      if (messages.length > 0) {
+        showAlert(successCount > 0 ? "success" : "error", messages.join("\n\n"));
+      }
+
       if (successCount > 0) {
-        router.push("/rentals");
+        setTimeout(() => router.push("/rentals"), 1200);
       }
     } catch (error) {
       console.error(error);
-      alert("取り寄せに失敗しました");
+      showAlert("error", "取り寄せに失敗しました");
     } finally {
       setSubmitting(false);
     }
@@ -209,8 +310,32 @@ export default function CartPage() {
       <Sidebar />
 
       <main className="flex-1">
-
         <Header cartCount={cart.length} />
+
+        {/* カスタムアラート（トースト） */}
+        {alertInfo && (
+          <div className="fixed top-20 left-1/2 z-[60] w-[92%] max-w-md -translate-x-1/2 sm:left-auto sm:right-4 sm:translate-x-0">
+            <div
+              className={`flex items-start gap-3 rounded-2xl border ${ALERT_STYLES[alertInfo.type].border} ${ALERT_STYLES[alertInfo.type].bg} p-4 shadow-lg backdrop-blur`}
+            >
+              <div className="mt-0.5 flex-shrink-0">
+                {ALERT_STYLES[alertInfo.type].icon}
+              </div>
+              <p
+                className={`flex-1 whitespace-pre-line text-sm font-semibold leading-relaxed ${ALERT_STYLES[alertInfo.type].text}`}
+              >
+                {alertInfo.message}
+              </p>
+              <button
+                onClick={() => setAlertInfo(null)}
+                className={`flex-shrink-0 rounded-full p-1 hover:bg-black/5 ${ALERT_STYLES[alertInfo.type].text}`}
+                aria-label="閉じる"
+              >
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+        )}
 
         <div className="mx-auto mt-24 max-w-5xl px-4 sm:mt-28 sm:px-6">
           <div className="flex items-center gap-3 rounded-2xl bg-white p-5 shadow">
@@ -219,12 +344,8 @@ export default function CartPage() {
             </div>
 
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                カート
-              </h1>
-              <p className="text-sm text-gray-500">
-                取り寄せる商品を確認できます
-              </p>
+              <h1 className="text-2xl font-bold text-gray-900">カート</h1>
+              <p className="text-sm text-gray-500">取り寄せる商品を確認できます</p>
             </div>
           </div>
         </div>
@@ -346,7 +467,7 @@ export default function CartPage() {
               </p>
 
               <button
-                onClick={requestBooks}
+                onClick={handleRequestClick}
                 disabled={submitting || hasOutOfStockItem || exceedsLimit}
                 className="flex w-full items-center justify-center gap-2 rounded-lg bg-green-600 py-3 font-bold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto sm:px-8"
               >
@@ -362,6 +483,64 @@ export default function CartPage() {
                   </>
                 )}
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* 同意モーダル */}
+        {showConsentModal && (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/50 p-4">
+            <div className="flex max-h-[85vh] w-full max-w-lg flex-col rounded-2xl bg-white shadow-2xl">
+              <div className="flex items-center gap-3 border-b border-gray-100 p-5">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-teal-100">
+                  <ShieldCheck className="text-teal-700" size={20} />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-gray-900">サービス利用と注意点</h2>
+                  <p className="text-xs text-gray-500">
+                    内容をご確認のうえ、同意して取り寄せてください
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-5">
+                <ul className="space-y-2.5 text-sm text-gray-700">
+                  {TERMS.map((term, i) => (
+                    <li key={i} className="flex gap-2">
+                      <span className="mt-0.5 flex-shrink-0 text-teal-600">•</span>
+                      <span>{term}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <label className="mt-5 flex cursor-pointer items-start gap-2 rounded-xl bg-gray-50 p-3">
+                  <input
+                    type="checkbox"
+                    checked={agreed}
+                    onChange={(e) => setAgreed(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 flex-shrink-0 accent-teal-600"
+                  />
+                  <span className="text-sm font-semibold text-gray-800">
+                    上記の内容に同意します
+                  </span>
+                </label>
+              </div>
+
+              <div className="flex gap-3 border-t border-gray-100 p-5">
+                <button
+                  onClick={() => setShowConsentModal(false)}
+                  className="flex-1 rounded-lg bg-gray-100 py-3 font-bold text-gray-700 hover:bg-gray-200"
+                >
+                  キャンセル
+                </button>
+                <button
+                  onClick={submitRequest}
+                  disabled={!agreed}
+                  className="flex-1 rounded-lg bg-green-600 py-3 font-bold text-white hover:bg-green-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  同意して取り寄せる
+                </button>
+              </div>
             </div>
           </div>
         )}

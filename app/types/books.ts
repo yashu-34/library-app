@@ -15,4 +15,6 @@ export type Book = {
 
   createdAt?: any;
   updatedAt?: any;
+
+  salesName?: string;
 };
