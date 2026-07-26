@@ -6,6 +6,7 @@ import {
   getDocs,
   updateDoc,
   doc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { db } from "@/firebase/config";
 
@@ -15,11 +16,11 @@ interface Rental {
   userName: string;
   borrowDate: string;
   returnDate: string;
+  shippedDate?: string;
   status: string;
 }
 
 type SortOption =
-  | "today"
   | "date_desc"
   | "pending_first"
   | "shipped_first"
@@ -27,10 +28,9 @@ type SortOption =
   | "user";
 
 const SORT_LABELS: Record<SortOption, string> = {
-  today: "今日に近い順",
   date_desc: "注文日が新しい順",
-  pending_first: "未発送を上に",
-  shipped_first: "発送済みを上に",
+  pending_first: "未発送",
+  shipped_first: "発送済",
   name: "商品名順",
   user: "注文者順",
 };
@@ -42,7 +42,7 @@ export default function RentalsPage() {
   const [keyword, setKeyword] = useState("");
 
   const [sortOption, setSortOption] =
-    useState<SortOption>("today");
+    useState<SortOption>("date_desc");
 
   // ----------------------------
   // Firestore取得
@@ -53,11 +53,27 @@ export default function RentalsPage() {
         collection(db, "rentals")
       );
 
-      const list: Rental[] = snapshot.docs.map((docSnap) => ({
-        id: docSnap.id,
-        ...(docSnap.data() as Omit<Rental, "id">),
-      }));
+      const list: Rental[] =
+        snapshot.docs.map((docSnap) => {
 
+          const data = docSnap.data();
+
+          return {
+            id: docSnap.id,
+            bookTitle: data.bookTitle ?? "",
+            userName: data.userName ?? "",
+            borrowDate: data.borrowDate ?? "",
+            returnDate: data.returnDate ?? "",
+            shippedDate:
+              data.shippedDate
+                ? data.shippedDate
+                    .toDate()
+                    .toISOString()
+                : "",
+            status: data.status ?? "",
+          };
+
+        });
       setRentals(list);
     } catch (error) {
       console.error(error);
@@ -80,8 +96,8 @@ export default function RentalsPage() {
     try {
       await updateDoc(doc(db, "rentals", id), {
         status: "returned",
+        shippedDate: serverTimestamp(),
       });
-
       fetchRentals();
     } catch (error) {
       console.error(error);
@@ -107,18 +123,6 @@ export default function RentalsPage() {
     const list = [...rentals];
 
     switch (sortOption) {
-      case "today":
-        return list.sort(
-          (a, b) =>
-            Math.abs(
-              new Date(a.borrowDate).getTime() -
-                Date.now()
-            ) -
-            Math.abs(
-              new Date(b.borrowDate).getTime() -
-                Date.now()
-            )
-        );
 
       case "date_desc":
         return list.sort(
@@ -186,20 +190,57 @@ export default function RentalsPage() {
   // 検索
   // ----------------------------
   const filteredRentals = useMemo(() => {
+
     return sortedRentals.filter((rental) => {
+
       const keywordLower =
         keyword.toLowerCase();
 
-      return (
+
+      // 検索条件
+      const matchesKeyword =
         rental.bookTitle
           .toLowerCase()
           .includes(keywordLower) ||
         rental.userName
           .toLowerCase()
-          .includes(keywordLower)
+          .includes(keywordLower);
+
+
+
+      // ステータス絞り込み
+      let matchesStatus = true;
+
+
+      if(sortOption === "pending_first"){
+
+        matchesStatus =
+          rental.status === "borrowed";
+
+      }
+
+
+      if(sortOption === "shipped_first"){
+
+        matchesStatus =
+          rental.status === "returned";
+
+      }
+
+
+
+      return (
+        matchesKeyword &&
+        matchesStatus
       );
+
     });
-  }, [sortedRentals, keyword]);
+
+  }, [
+    sortedRentals,
+    keyword,
+    sortOption
+  ]);
 
   // ----------------------------
   // ステータスバッジ
@@ -267,16 +308,6 @@ export default function RentalsPage() {
             </p>
           </div>
 
-          <div className="rounded-xl border bg-white p-5 shadow-sm">
-            <p className="text-xs text-gray-500">
-              表示件数
-            </p>
-
-            <p className="mt-2 text-3xl font-bold text-sky-700">
-              {filteredRentals.length}
-            </p>
-          </div>
-
         </div>
 
         {/* 検索・並び替え */}
@@ -289,7 +320,7 @@ export default function RentalsPage() {
             onChange={(e) =>
               setKeyword(e.target.value)
             }
-            className="flex-1 rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm outline-none transition focus:border-teal-600"
+            className="flex-1 rounded-lg border border-gray-500 bg-white px-4 py-3 text-sm outline-none transition focus:border-teal-600 text-gray-900"
           />
 
           <select
@@ -299,7 +330,7 @@ export default function RentalsPage() {
                 e.target.value as SortOption
               )
             }
-            className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-teal-600"
+            className="rounded-lg border border-gray-300 bg-white px-4 py-3 text-sm outline-none focus:border-teal-600 text-gray-900"
           >
             {Object.entries(SORT_LABELS).map(
               ([value, label]) => (
@@ -341,7 +372,7 @@ export default function RentalsPage() {
 
                 <thead className="bg-gray-100">
 
-                  <tr className="text-left text-gray-600">
+                  <tr className="text-left text-gray-900">
 
                     <th className="px-5 py-4">
                       商品名
@@ -356,7 +387,7 @@ export default function RentalsPage() {
                     </th>
 
                     <th className="px-5 py-4">
-                      発送予定日
+                      発送日
                     </th>
 
                     <th className="px-5 py-4">
@@ -385,7 +416,7 @@ export default function RentalsPage() {
                           {rental.bookTitle}
                         </td>
 
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-4 text-gray-900">
                           {rental.userName}
                         </td>
 
@@ -394,7 +425,13 @@ export default function RentalsPage() {
                         </td>
 
                         <td className="px-5 py-4 text-gray-600">
-                          {rental.returnDate}
+                          {rental.status === "returned"
+                            ? rental.shippedDate
+                              ? new Date(
+                                  rental.shippedDate
+                                ).toLocaleDateString("ja-JP")
+                              : "-"
+                            : "-"}
                         </td>
 
                         <td className="px-5 py-4">

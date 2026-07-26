@@ -358,7 +358,7 @@ export default function CartPage() {
               ))}
             </div>
           ) : cart.length === 0 ? (
-            <div className="rounded-2xl border border-gray-200 bg-white p-5 transition-all hover:-translate-y-1 hover:shadow-xl">
+            <div className="text-center rounded-2xl border border-gray-200 bg-white p-5 transition-all hover:-translate-y-1 hover:shadow-xl">
               <PackageOpen className="mx-auto mb-3 text-gray-300" size={40} />
               <p className="text-gray-500">カートに商品がありません</p>
               <Link

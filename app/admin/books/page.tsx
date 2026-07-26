@@ -70,10 +70,22 @@ export default function BooksPage() {
   }, [books, searchTerm, selectedCategory]);
 
   return (
-    <main className="min-h-screen bg-gray-50 px-4 pb-10 pt-20 sm:px-6 sm:pt-10 lg:pl-[calc(18rem+2.5rem)] lg:pr-10 lg:pt-10">
+    <main
+      className="
+        min-h-screen
+        bg-gray-100
+        px-4
+        pb-10
+        pt-20
+        sm:px-6
+        lg:pl-[calc(18rem+2.5rem)]
+        lg:pr-10
+        lg:pt-10
+      "
+    >
       <div className="mx-auto max-w-6xl">
         {/* ヘッダー */}
-        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-5 mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-wide text-gray-900 sm:text-3xl">
             <HiOutlineArchiveBox className="h-7 w-7 text-teal-700" />
             商品一覧
@@ -96,7 +108,7 @@ export default function BooksPage() {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="商品名・香りで検索"
+              placeholder="商品名・販売名で検索"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-100"
             />
           </div>
@@ -106,7 +118,7 @@ export default function BooksPage() {
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="rounded-xl border border-gray-200 bg-gray-50 py-2.5 px-4 text-sm font-semibold text-gray-700 outline-none transition focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-100 sm:w-56"
           >
-            <option value="all">すべてのカテゴリ</option>
+            <option value="all">すべての商品</option>
             {categories.map((category) => (
               <option key={category} value={category}>
                 {category}
@@ -144,14 +156,33 @@ export default function BooksPage() {
 
         {/* 商品一覧 */}
         {!loading && filteredBooks.length > 0 && (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div
+            className="
+              grid
+              grid-cols-1
+              gap-4
+              sm:grid-cols-2
+              sm:gap-5
+              lg:grid-cols-3
+            "
+          >
             {filteredBooks.map((book) => (
               <div
                 key={book.id}
                 className="flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md"
               >
                 {/* 画像 */}
-                <div className="flex h-48 items-center justify-center bg-gray-50 p-4">
+                <div
+                  className="
+                    flex
+                    h-40
+                    items-center
+                    justify-center
+                    bg-gray-50
+                    p-4
+                    sm:h-48
+                  "
+                >
                   {book.imageUrl ? (
                     <div className="relative h-full w-full">
                       <Image
@@ -171,14 +202,31 @@ export default function BooksPage() {
                 </div>
 
                 {/* 詳細 */}
-                <div className="flex flex-1 flex-col gap-2 p-5">
+                <div
+                  className="
+                    flex
+                    flex-1
+                    flex-col
+                    gap-2
+                    p-4
+                    sm:p-5
+                  "
+                >
                   {book.category && (
                     <span className="inline-flex w-fit items-center rounded-full bg-teal-50 px-2.5 py-1 text-[11px] font-bold text-teal-700">
                       {book.category}
                     </span>
                   )}
 
-                  <h2 className="line-clamp-2 text-lg font-bold text-gray-900">
+                  <h2
+                    className="
+                      line-clamp-2
+                      text-base
+                      font-bold
+                      text-gray-900
+                      sm:text-lg
+                    "
+                  >
                     {book.title}
                   </h2>
 
@@ -208,17 +256,43 @@ export default function BooksPage() {
                   </dl>
 
                   {/* アクション */}
-                  <div className="mt-auto flex gap-2 pt-4">
+                  <div
+                    className="
+                      mt-auto
+                      flex
+                      gap-2
+                      pt-4
+                    "
+                  >
                     <Link
                       href={`/admin/books/${book.id}`}
-                      className="flex-1 rounded-full border border-gray-200 py-2 text-center text-sm font-bold text-gray-700 transition hover:border-teal-600 hover:text-teal-700"
+                      className="
+                        flex-1
+                        rounded-full
+                        border
+                        border-gray-200
+                        py-2.5
+                        text-center
+                        text-sm
+                        font-bold
+                        text-gray-700
+                        "
                     >
                       詳細
                     </Link>
 
                     <Link
                       href={`/admin/books/${book.id}/edit`}
-                      className="flex-1 rounded-full bg-teal-700 py-2 text-center text-sm font-bold text-white transition hover:bg-teal-800"
+                      className="
+                        flex-1
+                        rounded-full
+                        bg-teal-700
+                        py-2.5
+                        text-center
+                        text-sm
+                        font-bold
+                        text-white
+                        "
                     >
                       編集
                     </Link>

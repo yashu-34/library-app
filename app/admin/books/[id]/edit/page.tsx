@@ -171,7 +171,7 @@ export default function EditBookPage() {
 
   return (
     <main className="min-h-screen bg-white px-4 pb-16 pt-20 sm:px-6 sm:pt-10 lg:pl-[calc(18rem+2.5rem)] lg:pr-10 lg:pt-10">
-      <div className="mx-auto max-w-xl">
+      <div className="max-w-4xl">
         <Link
           href="/admin/books"
           className="mb-6 inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 transition hover:text-gray-900"
@@ -180,7 +180,18 @@ export default function EditBookPage() {
           商品一覧へ戻る
         </Link>
 
-        <h1 className="mb-8 border-b border-gray-200 pb-6 text-xl font-bold text-gray-900 sm:text-2xl">
+        <h1
+          className="
+            mb-8
+            border-b
+            border-gray-200
+            pb-6
+            text-xl
+            font-bold
+            text-gray-900
+            sm:text-2xl
+          "
+        >
           商品を編集
         </h1>
 
@@ -247,16 +258,55 @@ export default function EditBookPage() {
             </div>
           </div>
 
-          <div className="max-w-[10rem]">
+          <div className="w-full sm:w-64">
             <label className={labelClass}>在庫数</label>
             <input
               type="number"
               min={0}
-              className={inputClass}
-              value={book.stock}
-              onChange={(e) =>
-                setBook({ ...book, stock: Number(e.target.value) })
-              }
+              inputMode="numeric"
+              className="
+                w-full
+                rounded-xl
+                border
+                border-gray-300
+                bg-white
+                px-4
+                py-3
+                text-lg
+                font-semibold
+                text-gray-900
+                outline-none
+                transition
+                focus:border-teal-600
+                focus:ring-2
+                focus:ring-teal-100
+              "
+              value={book.stock === 0 ? "" : book.stock}
+              onChange={(e) => {
+
+                const value = e.target.value;
+
+                // 空の場合
+                if(value === ""){
+                  setBook({
+                    ...book,
+                    stock: 0
+                  });
+                  return;
+                }
+
+
+                // 数字だけ許可
+                const number =
+                  Number(value.replace(/^0+/, ""));
+
+
+                setBook({
+                  ...book,
+                  stock: number
+                });
+
+              }}
             />
           </div>
 

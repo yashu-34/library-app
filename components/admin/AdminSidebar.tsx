@@ -135,6 +135,7 @@ export default function AdminSidebar() {
           <button
             onClick={handleLogout}
             className="
+              mb-10
               mx-auto
               flex
               w-44

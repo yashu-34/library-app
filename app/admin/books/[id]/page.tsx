@@ -116,7 +116,7 @@ export default function BookDetailPage() {
       <div className="mx-auto max-w-3xl">
         <Link
           href="/admin/books"
-          className="mb-6 inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 transition hover:text-gray-900"
+          className="mt-5 mb-6 inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 transition hover:text-gray-900"
         >
           <HiOutlineArrowLeft className="h-4 w-4" />
           商品一覧へ戻る

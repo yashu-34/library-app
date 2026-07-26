@@ -1,6 +1,5 @@
 "use client";
 
-import LogoutButton from "../auth/LogoutButton";
 import { PiPackageFill } from "react-icons/pi";
 
 export default function AdminHeader() {
@@ -23,12 +22,10 @@ export default function AdminHeader() {
         shadow-sm
       "
     >
-      <h1 className="ml-10 flex items-center gap-2 text-xl font-extrabold tracking-wide text-[#3F3A36]">
+      <h1 className="ml-5 flex items-center gap-2 text-xl font-extrabold tracking-wide text-[#3F3A36]">
         <PiPackageFill className="h-5 w-5 text-[#A9707A]" />
         管理者画面
       </h1>
-
-      <LogoutButton />
     </header>
   );
 }
