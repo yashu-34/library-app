@@ -68,14 +68,14 @@ export default function AdminSidebar() {
     <>
       {/* スマホ用メニューボタン */}
       {!menuOpen && (
-        <div className="fixed left-2 top-4 sm:left-3 sm:top-6 z-50 lg:hidden">
+        <div className="fixed left-2 top-4 sm:left-3 sm:top-6 z-[100] lg:hidden">
           <button
             onClick={() => setMenuOpen(true)}
-            className="rounded-full bg-teal-700 p-2 sm:p-3 text-white shadow-sm transition hover:bg-teal-800"
+            className="rounded-full bg-teal-700 p-1.5 sm:p-2 text-white shadow-sm transition hover:bg-teal-800"
             aria-label="メニューを開く"
           >
-            <HiOutlineBars3 size={18} className="sm:hidden" />
-            <HiOutlineBars3 size={24} className="hidden sm:block" />
+            <HiOutlineBars3 size={14} className="sm:hidden" />
+            <HiOutlineBars3 size={18} className="hidden sm:block" />
           </button>
         </div>
       )}
@@ -160,7 +160,7 @@ export default function AdminSidebar() {
 
       {/* スマホメニュー */}
       {menuOpen && (
-        <div className="fixed inset-0 z-50 bg-black/40 lg:hidden">
+        <div className="fixed inset-0 z-[9999] bg-black/40 lg:hidden">
           <div
             className="
               h-full

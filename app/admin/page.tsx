@@ -134,7 +134,7 @@ export default function AdminPage() {
   ];
 
   return (
-    <main className="min-h-screen bg-gray-100 px-4 py-8 sm:px-6 lg:px-10">
+    <main className="min-h-screen bg-gray-100 px-4 py-8 sm:ml-20 sm:px-6 lg:ml-64 lg:px-10 transition-all">
       <div className="mx-auto max-w-6xl">
         <h1 className="mb-8 text-2xl font-extrabold tracking-wide text-[#3F3A36] sm:text-3xl">
           管理者ダッシュボード

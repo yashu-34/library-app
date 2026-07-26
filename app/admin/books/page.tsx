@@ -96,7 +96,7 @@ export default function BooksPage() {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="商品名・販売名で検索"
+              placeholder="商品名・香りで検索"
               className="w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pl-10 pr-4 text-sm text-gray-900 outline-none transition focus:border-teal-600 focus:bg-white focus:ring-2 focus:ring-teal-100"
             />
           </div>
@@ -184,7 +184,7 @@ export default function BooksPage() {
 
                   <dl className="mt-1 space-y-1 text-xs text-gray-500">
                     <div className="flex justify-between gap-2">
-                      <dt className="shrink-0">販売名</dt>
+                      <dt className="shrink-0">香り</dt>
                       <dd className="truncate text-right font-semibold text-gray-700">
                         {book.author}
                       </dd>
