@@ -388,14 +388,14 @@ export default function BookDetailPage() {
                   <button
                     onClick={handleAddCart}
                     disabled={remainingStock <= 0}
-                    className="group flex w-full items-center justify-center gap-2 rounded-full bg-[#A9707A] py-3.5 text-base font-extrabold tracking-wide text-white shadow-sm transition hover:bg-[#96626C] disabled:cursor-not-allowed disabled:bg-[#3F3A36]/15 disabled:text-[#3F3A36]/40 disabled:shadow-none md:text-lg"
+                    className="group flex w-full items-center justify-center gap-2 rounded-full bg-teal-700 py-3.5 text-base font-extrabold tracking-wide text-white shadow-sm transition hover:bg-teal-800 disabled:cursor-not-allowed  disabled:shadow-none md:text-lg"
                   >
                     <PiShoppingCartFill className="h-5 w-5" />
                     {orderedBookIds.includes(id)
                       ? "取り寄せ済み"
                       : remainingStock <= 0
                       ? "在庫なし"
-                      : "この一包をカートへ"}
+                      : "カートへ追加"}
                   </button>
 
                   <Link
