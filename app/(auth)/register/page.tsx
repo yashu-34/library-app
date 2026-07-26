@@ -34,7 +34,7 @@ export default function RegisterPage() {
 
       alert("登録しました！");
 
-      router.push("/product_search");
+      router.push("/");
 
     } catch (error: any) {
       console.error(error);
